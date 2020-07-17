@@ -29,3 +29,13 @@ Topical is an API
 }
 ```
 
+## Ingredient
+
+```json
+{
+  'name': string,
+  'description': string,
+  'names': [IngredientName]
+}
+```
+
