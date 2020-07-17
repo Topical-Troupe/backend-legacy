@@ -1,3 +1,7 @@
 # Topical: the Backend
 
-bottom text
+Topical is an API
+
+## Endpoints
+
+Nothing yet
