@@ -3,8 +3,8 @@ from rest_framework import routers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import User
-from .serializers import UserSerializer
+from .models import Ingredient, User
+from .serializers import IngredientSerializer, UserSerializer
 
 router = routers.DefaultRouter()
 
@@ -23,3 +23,9 @@ class UserViewSet(viewsets.ModelViewSet):
 		)
 		return Response(serializer.data)
 router.register('user', UserViewSet)
+
+class IngredientViewSet(viewsets.ModelViewSet):
+	queryset = Ingredient.objects.all()
+	serializer_class = IngredientSerializer
+	lookup_field = 'names'
+router.register('ingredient', IngredientViewSet)
