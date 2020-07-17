@@ -5,6 +5,7 @@ MAX_DESCRIPTION_LEN = 8192
 MAX_INGREDIENT_LEN = 512
 
 class Ingredient(models.Model):
+	name = models.CharField(max_length = MAX_INGREDIENT_LEN)
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN)
 
 class IngredientName(models.Model):
