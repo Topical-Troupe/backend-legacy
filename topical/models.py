@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.models import AbstractUser
+from django.contrib.auth.models import AbstractUser
 
 class Ingredient(models.Model):
 	pass
