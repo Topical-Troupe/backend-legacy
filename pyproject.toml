@@ -2,7 +2,7 @@
 name = "topical-api"
 version = "0.0.1"
 description = "todo"
-authors = ["Britton W. <britton.wolfe1999@gmail.com>"]
+authors = ["Britton W. <britton.wolfe1999@gmail.com>", "Steve C. <scarter13@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "3.8.2"
