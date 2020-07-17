@@ -125,9 +125,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-<<<<<<< HEAD
 AUTH_USER_MODEL = 'topical.User'
-=======
 
 # REST framework settings
 
@@ -140,4 +138,3 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
->>>>>>> refs/remotes/origin/main
