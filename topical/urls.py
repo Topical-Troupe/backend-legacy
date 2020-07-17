@@ -14,6 +14,7 @@ Including another URLconf
 	2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+<<<<<<< HEAD
 from django.urls import include, path
 
 from .rest import router, UserViewSet
@@ -23,4 +24,22 @@ urlpatterns = [
 
 	path('api/', include(router.urls)),
 	path('api/me/', UserViewSet.as_view({ 'get': 'me' }), name = 'me')
+=======
+from django.urls import path
+from django.conf import settings
+from django.conf.urls import url, include
+from rest_framework import routers, serializers, viewsets
+
+
+"""
+The 'path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))' may not be necessary since we are using djoser
+"""
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('api/auth/', include('djoser.urls')),
+    path('api/auth/', include('djoser.urls.authtoken')),
+
+>>>>>>> refs/remotes/origin/main
 ]
