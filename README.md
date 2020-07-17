@@ -4,4 +4,8 @@ Topical is an API
 
 ## Endpoints
 
-Nothing yet
+`api/` – API root
+
+### User
+
+`api/me/` – gets the profile of the current user
