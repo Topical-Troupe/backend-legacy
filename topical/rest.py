@@ -31,7 +31,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
 router.register('ingredient', IngredientViewSet)
 
 class ProductViewSet(viewsets.ModelViewSet):
-	queyset = Product.objects.all()
+	queryset = Product.objects.all()
 	serializer_class = ProductSerializer
 	lookup_field = 'name'
 router.register('product', ProductViewSet)
