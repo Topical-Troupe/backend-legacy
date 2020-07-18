@@ -11,20 +11,29 @@ class Product(models.Model):
 
 class Ingredient(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
-	slug = models.CharField(max_length = MAX_NAME_LEN)
+	slug = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, null = True)
 	in_products = models.ManyToManyField(to = Product, symmetrical = True, related_name = 'ingredients')
 	def save(self, *args, **kwargs):
 		self.slug = self.generate_slug()
+		self.ensure_basename()
 		super(Ingredient, self).save(*args, **kwargs)
 	def __str__(self):
 		return self.name
 	def generate_slug(self):
 		return (self.name.lower().replace(' ', '-'))
+	def ensure_basename(self):
+		test = self.names.filter(name = self.name)
+		if len(test) == 0:
+			basename = IngredientName()
+			basename.name = self.name
+			basename.ingredient = self
+			basename.save()
+	
 
 class IngredientName(models.Model):
 	ingredient = models.ForeignKey(to = Ingredient, on_delete = models.SET_NULL, null = True, related_name = 'names')
-	name = models.CharField(max_length = MAX_NAME_LEN)
+	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	def __str__(self):
 		return self.name
 
