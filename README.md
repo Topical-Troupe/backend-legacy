@@ -10,12 +10,6 @@ Topical is an API
 
 `api/me/` – gets the profile of the current user
 
-### Ingredient
-
-`api/ingredient/` – gets a list of ingredients
-
-`api/ingredient/<str:name>/` – gets a specific ingredient.
-
 ## Models
 
 ## User
@@ -26,16 +20,6 @@ Topical is an API
   'first_name': string,
   'last_name': string,
   'excluded_ingredients': [Ingredient]
-}
-```
-
-## Ingredient
-
-```json
-{
-  'name': string,
-  'description': string,
-  'names': [IngredientName]
 }
 ```
 
