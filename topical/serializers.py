@@ -13,6 +13,7 @@ class IngredientSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ['names', 'description']
 
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
+	ingredients = IngredientSerializer(many = True, required = False, default = [])
 	class Meta:
 		model = Product
 		fields = ['name', 'description', 'ingredients']
