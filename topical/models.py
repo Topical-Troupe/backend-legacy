@@ -20,7 +20,7 @@ class Ingredient(models.Model):
 	def __str__(self):
 		return self.name
 	def generate_slug(self):
-		return (self.name.lower().replace(' ', '_'))
+		return (self.name.lower().replace(' ', '-'))
 
 class IngredientName(models.Model):
 	ingredient = models.ForeignKey(to = Ingredient, on_delete = models.SET_NULL, null = True, related_name = 'names')
