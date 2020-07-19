@@ -16,8 +16,11 @@ class Ingredient(models.Model):
 	in_products = models.ManyToManyField(to = Product, symmetrical = True, related_name = 'ingredients')
 	def save(self, *args, **kwargs):
 		self.slug = self.generate_slug()
-		self.ensure_basename()
+		basename = self.ensure_basename()
 		super(Ingredient, self).save(*args, **kwargs)
+		if basename is not None:
+			basename.save()
+
 	def __str__(self):
 		return self.name
 	def generate_slug(self):
@@ -28,8 +31,7 @@ class Ingredient(models.Model):
 			basename = IngredientName()
 			basename.name = self.name
 			basename.ingredient = self
-			basename.save()
-	
+			return basename
 
 class IngredientName(models.Model):
 	ingredient = models.ForeignKey(to = Ingredient, on_delete = models.SET_NULL, null = True, related_name = 'names')
