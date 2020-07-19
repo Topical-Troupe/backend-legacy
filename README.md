@@ -18,7 +18,7 @@ Topical is an API
 
 ## Models
 
-## User
+### User
 
 ```json
 {
@@ -29,13 +29,23 @@ Topical is an API
 }
 ```
 
-## Ingredient
+### Ingredient
 
 ```json
 {
   'name': string,
   'description': string,
   'names': [IngredientName]
+}
+```
+
+### Product
+
+```json
+{
+  'name': string,
+  'brand': string,
+  'ingredients'
 }
 ```
 

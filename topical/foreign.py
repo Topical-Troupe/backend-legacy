@@ -22,5 +22,5 @@ def get_product_or_create(upc):
 		item = Product()
 		item.name = jso['Title']
 		item.upc = upc
-		item.brand = jso['Brand']
+		#item.brand = jso['Brand']
 		return item
