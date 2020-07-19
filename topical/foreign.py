@@ -14,9 +14,10 @@ def get_product_or_create(upc):
 	item = Product.objects.filter(upc = upc)
 	if len(item) == 0:
 		response = get_product_info(upc)
-		if response.status_code != 200:
-			return HttpResponse(status = response.status_code)
+		if response['Code'] != 'OK':
+			return HttpResponse(status = 404)
+		jso = response.json['Items'][0]
 		item = Product()
-		item.name = response.json['title']
-		raw_ing = response.json['description']
+		item.name = jso['Title']
+		raw_ing = jso['Description']
 		return item
