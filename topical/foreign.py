@@ -1,4 +1,5 @@
-from requests import get
+from json import loads as jsonload
+from urllib.request import urlopen
 from django.http import HttpResponse
 
 from .models import Product
@@ -7,7 +8,7 @@ FAPI_URL = 'https://api.upcitemdb.com/prod/trial/lookup?upc='
 
 def get_product_info(upc):
 	url = f'{FAPI_URL}{upc}'
-	return get(url)
+	return jsonload(urlopen(url).read().title())
 
 def get_product_or_create(upc):
 	item = Product.objects.filter(upc = upc)
