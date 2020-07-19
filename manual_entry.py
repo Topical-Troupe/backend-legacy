@@ -3,12 +3,22 @@ site = input('enter the URL to send the requests to').trim()
 if not site.endswith('/'):
 	site += '/'
 
-endpoint = {
+ENDPOINT = {
 	'ingredient': (f'{site}api/product/')
 }
 
+def post(endpoint, json):
+	r = requests.post(ENDPOINT[endpoint], json)
+	return r.status_code
+
 def post_ingredient():
-	pass
+	name = input('ingredient name: ')
+	description = input('description: ')
+	json = {
+		'name': name,
+		'description': description
+	}
+	print(post('ingredient', json))
 
 def post_name():
 	pass
