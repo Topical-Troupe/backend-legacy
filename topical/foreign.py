@@ -22,5 +22,8 @@ def get_product_or_create(upc):
 		item = Product()
 		item.name = jso['Title']
 		item.upc = upc
+		# Uncomment this line if we want to add the brand to
+		# the product model.
 		#item.brand = jso['Brand']
+		item.save()
 		return item
