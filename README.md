@@ -45,7 +45,7 @@ Topical is an API
 {
   'name': string,
   'brand': string,
-  'ingredients'
+  'ingredients': [Ingredient]
 }
 ```
 
