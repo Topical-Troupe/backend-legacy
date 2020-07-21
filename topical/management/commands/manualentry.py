@@ -49,7 +49,7 @@ class Command(BaseCommand):
 				name = None
 				while name is None:
 					name = input('New name: ')
-					if len(IngredientName.objects.filter(name = name)) != 0:
+					if len(IngredientName.objects.filter(name__iexact = name)) != 0:
 						print(f'{name} is already used!')
 						name = None
 				item.name = name
