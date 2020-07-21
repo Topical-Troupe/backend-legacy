@@ -10,27 +10,46 @@ First, I'm going to write this assuming that I am getting a UPC in the query.
 Will need a try/except for products that aren't in the db yet
 """
 def search_products(request):
-    query = request.GET.get('q')
-    common_allergens = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrence", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
-    excluded_ingredients = request.user.excluded_ingredients
-    rejected_for = []  
-    if query is not None:
-        product = Product.objects.filter(upc=query)
-        ingredients = product.ingredients.all()
-        #all_ingredients = ingredients
-        if request.user.is_authenticated:
-            #if query is a number, and we will need a try/except here
-            for ingredient in ingredients:
-                if ingredient in excluded_ingredients:
-                    rejected_for.append(ingredient)
-        else:
-            for ingredient in ingredients:
-                if ingredient in common_allergens:
-                    rejected_for.append(ingredient)
-
+    name_q = request.GET.get('name')
+    upc_q = request.GET.get('upc')
+    print(name_q)
+    common_set = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrence", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
+    common_names = IngredientName.objects.filter(name__in = common_set)
+    common_allergens = Ingredient.objects.filter(names__in = common_names)
+    excluded_ingredients = None
+    response = {
+        'count': 0,
+        'results': []
+    }
+    if request.user.is_authenticated:
+        excluded_ingredients = request.user.excluded_ingredients
     else:
-        rejected_for = None
-    return JsonResponse(rejected_for)
+        excluded_ingredients = common_allergens
+    if name_q is not None:
+        products = Product.objects.filter(name__contains = name_q)
+        response['count'] = len(products)
+        for product in products.all():
+            obj = {
+                'upc': product.upc,
+                'name': product.name,
+                'violations': []
+            }
+            ingredients = product.ingredients.all()
+            for n in range(len(ingredients)):
+                ingredient = ingredients[n]
+                if ingredient in excluded_ingredients.all():
+                    violation_data = {
+                        'slug': ingredient.slug,
+                        'description': ingredient.description,
+                        'names': []
+                    }
+                    for name in ingredient.names:
+                        violation_data['names'].append(name.name)
+                    obj['violations'].append(violation_data)
+            response['results'].append(obj)
+    if upc_q is not None:
+        return redirect(f'/api/product/{upc_q}/')
+    return JsonResponse(response)
 
 def fuzzy_name(request, fuzzy):
 	result = IngredientName.objects.filter(name__iexact = fuzzy)
