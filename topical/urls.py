@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 <<<<<<< HEAD
 from django.urls import include, path
-
+from topical import views as topical_views
 from .rest import router, UserViewSet
 
 urlpatterns = [
@@ -37,9 +37,10 @@ The 'path('api-auth/', include('rest_framework.urls', namespace='rest_framework'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('api/auth/', include('djoser.urls')),
     path('api/auth/', include('djoser.urls.authtoken')),
 
->>>>>>> refs/remotes/origin/main
+	path('api/', include(router.urls)),
+	path('api/me/', UserViewSet.as_view({ 'get': 'me' }), name = 'me'),
+	path('api/search/', topical_views.search_products, name='search_products'),
 ]
