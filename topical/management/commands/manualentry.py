@@ -61,16 +61,36 @@ class Command(BaseCommand):
 			product = None
 			while name is None:
 				name = input('Name: ')
-				res = Product.objects.filter(name_iexact = name)
+				res = Product.objects.filter(name__iexact = name)
+				if len(res) == 0:
+					res = Product.objects.filter(upc = name)
 				if len(res) != 0:
 					cont = input(f'A product called {name} already exists! Did you want to add ingredients (y/n)? ').lower().strip()
 					if cont != 'y':
 						name = None
+					else:
+						product = res
 			if product is not None:
-				print('currently unimplemented, sorry :(')
+				print(f'adding ingredients to {name}')
+				while True:
+					ing = None
+					while ing is None:
+						ing = input('ingredient name: ')
+						ing = IngredientName.objects.filter(name__iexact = ing)
+						tmp = Ingredient.objects.filter(names__in = ing)
+						if len(tmp) == 0:
+							print(f'no ingredient with the name {ing}')
+							ing = None
+						else:
+							ing = tmp[0]
+							ing.in_products.add(product[0])
+							ing.save()
+					if input('enter another ingredient (y/n)? ').lower().strip() != 'y':
+						break
 			else:
 				product = Product()
 				product.name = name
-				print('currently unimplemented, sorry :(')
+				product.description = input('description: ')
+				product.save()
 		if input('Enter more (y/n)? ').lower().strip() == 'y':
 			self.handle(*args, **options)
