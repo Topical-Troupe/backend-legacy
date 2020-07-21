@@ -12,7 +12,7 @@ Will need a try/except for products that aren't in the db yet
 """
 def search_products(request):
     query = request.GET.get('q')
-    common_allergens = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrence", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile"]
+    common_allergens = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrence", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
     excluded_ingredients = request.user.excluded_ingredients
     rejected_for = []  
     if query is not None:
