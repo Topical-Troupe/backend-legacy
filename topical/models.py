@@ -7,7 +7,7 @@ MAX_NAME_LEN = 512
 class Product(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, null = True)
-	upc = models.IntegerField(null = True)
+	upc = models.IntegerField(null = True, unique = True)
 
 class Ingredient(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
@@ -16,8 +16,11 @@ class Ingredient(models.Model):
 	in_products = models.ManyToManyField(to = Product, symmetrical = True, related_name = 'ingredients')
 	def save(self, *args, **kwargs):
 		self.slug = self.generate_slug()
-		self.ensure_basename()
+		basename = self.ensure_basename()
 		super(Ingredient, self).save(*args, **kwargs)
+		if basename is not None:
+			basename.save()
+
 	def __str__(self):
 		return self.name
 	def generate_slug(self):
@@ -28,8 +31,7 @@ class Ingredient(models.Model):
 			basename = IngredientName()
 			basename.name = self.name
 			basename.ingredient = self
-			basename.save()
-	
+			return basename
 
 class IngredientName(models.Model):
 	ingredient = models.ForeignKey(to = Ingredient, on_delete = models.SET_NULL, null = True, related_name = 'names')
