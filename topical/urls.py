@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-
+from topical import views as topical_views
 from .rest import router, UserViewSet
 
 urlpatterns = [
@@ -25,4 +25,5 @@ urlpatterns = [
 
 	path('api/', include(router.urls)),
 	path('api/me/', UserViewSet.as_view({ 'get': 'me' }), name = 'me'),
+	path('api/search/', topical_views.search_products, name='search_products'),
 ]
