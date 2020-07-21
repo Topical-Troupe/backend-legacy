@@ -34,10 +34,7 @@ class Ingredient(models.Model):
 			return basename
 
 class IngredientName(models.Model):
-	ingredient = models.ForeignKey(to = Ingredient, on_delete = models.SET_NULL, null = True, related_name = 'names')
-	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)
-	def __str__(self):
-		return self.name
+	ingredient = models.ForeignKey(to = Ingredient, on_delete = models.CASCADE, related_name = 'names')
 
 class User(AbstractUser):
 	excluded_ingredients = models.ManyToManyField(to = Ingredient, symmetrical = True, related_name = 'excluded_by')
