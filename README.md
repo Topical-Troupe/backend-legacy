@@ -6,6 +6,8 @@ Topical is an API
 
 `api/` – API root
 
+`api/search` – The search endpoint, uses a query (`?q=`).
+
 ### User
 
 `api/me/` – gets the profile of the current user
