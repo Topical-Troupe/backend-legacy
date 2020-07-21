@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .models import Ingredient, Product, User
-from .serializers import UserSerializer
+from .serializers import IngredientSerializer, ProductSerializer, UserSerializer
 
 router = routers.DefaultRouter()
 
