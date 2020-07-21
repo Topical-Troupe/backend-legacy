@@ -1,1 +1,1 @@
-web: gunicorn cardclub.wsgi
+web: gunicorn topical.wsgi
