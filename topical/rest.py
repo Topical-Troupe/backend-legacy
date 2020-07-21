@@ -3,10 +3,22 @@ from rest_framework import routers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import User
+from .models import Ingredient, Product, User
 from .serializers import UserSerializer
 
 router = routers.DefaultRouter()
+
+class IngredientViewSet(viewsets.ModelViewSet):
+	queryset = Ingredient.objects.all()
+	serializer_class = IngredientSerializer
+	lookup_field = 'slug'
+router.register('ingredient', IngredientViewSet)
+
+class ProductViewSet(viewsets.ModelViewSet):
+	queryset = Product.objects.all()
+	serializer_class = ProductSerializer
+	lookup_field = 'name'
+router.register('product', ProductViewSet) 
 
 class UserViewSet(viewsets.ModelViewSet):
 	queryset = User.objects.all()
