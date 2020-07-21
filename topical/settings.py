@@ -138,3 +138,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
+
+# Heroku settings
+import django_heroku
+django_heroku.settings(locals())
+del DATABASES['default']['OPTIONS']['sslmode']
