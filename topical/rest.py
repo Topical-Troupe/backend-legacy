@@ -17,7 +17,7 @@ router.register('ingredient', IngredientViewSet)
 class ProductViewSet(viewsets.ModelViewSet):
 	queryset = Product.objects.all()
 	serializer_class = ProductSerializer
-	lookup_field = 'name'
+	lookup_field = 'upc'
 router.register('product', ProductViewSet) 
 
 class UserViewSet(viewsets.ModelViewSet):
