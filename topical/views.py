@@ -26,7 +26,7 @@ def search_products(request):
     else:
         excluded_ingredients = common_allergens
     if name_q is not None:
-        products = Product.objects.filter(name__contains = name_q)
+        products = Product.objects.filter(name__icontains = name_q)
         response['count'] = len(products)
         for product in products.all():
             obj = {
