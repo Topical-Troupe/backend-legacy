@@ -23,9 +23,7 @@ from rest_framework import routers, serializers, viewsets
 from .rest import router, UserViewSet
 from . import views as topical_views
 
-"""
-The 'path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))' may not be necessary since we are using djoser
-"""
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -35,4 +33,5 @@ urlpatterns = [
 	path('api/', include(router.urls)),
 	path('api/me/', UserViewSet.as_view({ 'get': 'me' }), name = 'me'),
 	path('api/search/', topical_views.search_products, name='search_products'),
+	path('api/ingredient/fuzzy/<str:fuzzy>/', topical_views.fuzzy_name, name = 'fuzzy_name')
 ]
