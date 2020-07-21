@@ -7,7 +7,7 @@ MAX_NAME_LEN = 512
 class Product(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, null = True)
-	upc = models.IntegerField(null = True, unique = True)
+	upc = models.CharField(max_length = 14, null = True, unique = True)
 
 class Ingredient(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
