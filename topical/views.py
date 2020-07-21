@@ -12,19 +12,27 @@ Will need a try/except for products that aren't in the db yet
 """
 def search_products(request):
     query = request.GET.get('q')
+    common_allergens = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrence", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile"]
     excluded_ingredients = request.user.excluded_ingredients
     rejected_for = []  
     if query is not None:
-        #if query is a number, and we will need a try/except here
         product = Product.objects.filter(upc=query)
         ingredients = product.ingredients.all()
-        for ingredient in ingredients:
+        #all_ingredients = ingredients
+        if request.user.is_authenticated:
+            #if query is a number, and we will need a try/except here
+            for ingredient in ingredients:
                 if ingredient in excluded_ingredients:
                     rejected_for.append(ingredient)
+        else:
+            for ingredient in ingredients:
+                if ingredient in common_allergens:
+                    rejected_for.append(ingredient)
+
     else:
-        search_results = None
+        rejected_for = None
     return JsonResponse(rejected_for)
 
 """
-Starting to wonder, though ... maybe I should make a classed based view for this instead so that I can assign a serializer to handle the response?  I'll know more once I've done some testing.
+Starting to wonder, though ... maybe I should make a class based view for this instead so that I can assign a serializer to handle the response?  I'll know more once I've done some testing.
 """
