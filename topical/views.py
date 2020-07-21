@@ -1,9 +1,8 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Product, Ingredient, User
+from django.shortcuts import redirect, get_object_or_404
+from .models import IngredientName, Product, Ingredient, User
 #from django.db.models import Q
 from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.http import JsonResponse
-
 
 # Create your views here.
 """
@@ -28,3 +27,8 @@ def search_products(request):
 """
 Starting to wonder, though ... maybe I should make a classed based view for this instead so that I can assign a serializer to handle the response?  I'll know more once I've done some testing.
 """
+
+def fuzzy_name(request, fuzzy):
+	result = IngredientName.objects.filter(name__iexact = fuzzy)
+	ingredient = get_object_or_404(Ingredient, names__in = result)
+	return redirect(f'/api/ingredient/{ingredient.slug}/')
