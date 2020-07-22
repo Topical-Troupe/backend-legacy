@@ -8,7 +8,15 @@ Topical is an API
 
 `api/search` – The search endpoint, uses a query (`?name=` or `?upc=` to go straight to a product by UPC).
 
-`api/ingredient/fuzzy/<str>` – Gets an ingredient by any of its names; redirects to the ingredient's proper endpoint.
+### Model Endpoints
+
+#### Ingredient
+
+`api/ingredient/fuzzy/<str>/` – Gets an ingredient by any of its names; redirects to the ingredient's proper endpoint.
+
+#### Product
+
+`api/product/<upc>/ingredients/` – View or change the list of ingredients on a product. Supports `GET`, `POST`, and `DELETE` methods.
 
 ### User
 
