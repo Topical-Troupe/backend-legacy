@@ -11,6 +11,7 @@ class Product(models.Model):
 
 class Ingredient(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
+	image_url = models.CharField(max_length = MAX_DESCRIPTION_LEN, null =  True)
 	slug = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, null = True)
 	in_products = models.ManyToManyField(to = Product, symmetrical = True, related_name = 'ingredients')
@@ -20,7 +21,6 @@ class Ingredient(models.Model):
 		super(Ingredient, self).save(*args, **kwargs)
 		if basename is not None:
 			basename.save()
-
 	def __str__(self):
 		return self.name
 	def generate_slug(self):
@@ -32,6 +32,13 @@ class Ingredient(models.Model):
 			basename.name = self.name
 			basename.ingredient = self
 			return basename
+	def by_name(name):
+		names = IngredientName.objects.filter(name__iexact = name)
+		res = Ingredient.objects.filter(names__in = names)
+		if len(res) == 0:
+			return None
+		else:
+			return res[0]
 
 class IngredientName(models.Model):
 	ingredient = models.ForeignKey(to = Ingredient, on_delete = models.SET_NULL, null = True, related_name = 'names')

@@ -1,4 +1,6 @@
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+import json
 from rest_framework import routers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -18,7 +20,31 @@ class ProductViewSet(viewsets.ModelViewSet):
 	queryset = Product.objects.all()
 	serializer_class = ProductSerializer
 	lookup_field = 'upc'
-router.register('product', ProductViewSet) 
+	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
+	def ingredients(self, request, upc):
+		product = get_object_or_404(Product, upc = upc)
+		if request.method == 'GET':
+			serializer = IngredientSerializer(
+				product.ingredients.all(),
+				many = True,
+				context = { 'context': request }
+			)
+			return Response(serializer.data)
+		if request.method == 'POST':
+			if not request.user.is_staff:
+				return HttpResponse(status = 401)
+			data = json.loads(request.body)
+			for name in data['names']:
+				product.ingredients.add(Ingredient.by_name(name))
+			return HttpResponse(status = 200)
+		if request.method == 'DELETE':
+			if not request.user.is_staff:
+				return HttpResponse(status = 401)
+			data = json.loads(request.body)
+			for name in data['names']:
+				product.ingredients.remove(Ingredient.by_name(name))
+			return HttpResponse(status = 200)
+router.register('product', ProductViewSet)
 
 class UserViewSet(viewsets.ModelViewSet):
 	queryset = User.objects.all()
