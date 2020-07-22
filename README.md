@@ -6,7 +6,7 @@ Topical is an API
 
 `api/` – API root
 
-`api/search` – The search endpoint, uses a query (`?q=`).
+`api/search` – The search endpoint, uses a query (`?name=` or `?upc=` to go straight to a product by UPC).
 
 `api/ingredient/fuzzy/<str>` – Gets an ingredient by any of its names; redirects to the ingredient's proper endpoint.
 
@@ -46,3 +46,27 @@ Topical is an API
   'ingredients': [Ingredient]
 }
 ```
+
+## Other JSON Responses
+
+### Search
+
+```json
+{
+  'count': int,
+  'results': [
+    {
+      'upc': str,
+      'name': str,
+      'violations': [
+        {
+          'slug': str,
+          'description': str,
+          'names': [str]
+        }, ...
+      ]
+    }, ...
+  ]
+}
+```
+
