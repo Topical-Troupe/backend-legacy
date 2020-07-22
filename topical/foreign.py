@@ -17,7 +17,7 @@ def get_product_or_create(upc):
 	if len(item) == 0:
 		if len(upc) == 13 and upc[0] == '0':
 			item = Product.objects.filter(upc = upc[1:])
-		elif len(upc == 12):
+		elif len(upc) == 12:
 			item = Product.objects.filter(upc = f'0{upc}')
 	if len(item) != 0:
 		return item
