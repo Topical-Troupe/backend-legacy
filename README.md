@@ -16,7 +16,7 @@ Topical is an API
 
 #### Product
 
-`api/product/<upc>/ingredients/` – View or change the list of ingredients on a product. Supports `GET`, `POST`, and `DELETE` methods.
+`api/product/<upc>/ingredients/` – View or change the list of ingredients on a product. Supports `GET`, `POST`, and `DELETE` methods. To `POST` or `DELETE`, send a JSON body with a list `names` containing fuzzy names of the ingredients to add or remove (e.g. `{ "names": ["sls"] }`).
 
 ### User
 
