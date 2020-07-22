@@ -13,7 +13,7 @@ class RelatedNameSerializer(serializers.ModelSerializer):
 		fields = ['name']
 
 class IngredientSerializer(serializers.HyperlinkedModelSerializer):
-	#slug = serializers.ReadOnlyField()
+	slug = serializers.ReadOnlyField()
 	names = RelatedNameSerializer(read_only = False, many = True, required = False, default = [])
 	class Meta:
 		model = Ingredient
