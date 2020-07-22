@@ -23,7 +23,7 @@ def get_product_or_create(upc):
 		return item
 	else:
 		response = get_product_info(upc)
-		if response['Code'] != 'Ok':
+		if response['Code'] != 'Ok' or len(response['Items']) == 0:
 			return HttpResponse(status = 404)
 		jso = response['Items'][0]
 		item = Product()
