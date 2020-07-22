@@ -8,6 +8,7 @@ FAPI_URL = 'https://api.upcitemdb.com/prod/trial/lookup?upc='
 
 def get_product_info(upc):
 	url = f'{FAPI_URL}{upc}'
+	print(url)
 	return jsonload(urlopen(url).read().title())
 
 def get_product_or_create(upc):
@@ -16,9 +17,9 @@ def get_product_or_create(upc):
 		return item
 	else:
 		response = get_product_info(upc)
-		if response['Code'] != 'OK':
+		if response['Code'] != 'Ok':
 			return HttpResponse(status = 404)
-		jso = response.json['Items'][0]
+		jso = response['Items'][0]
 		item = Product()
 		item.name = jso['Title']
 		item.upc = upc
@@ -26,4 +27,5 @@ def get_product_or_create(upc):
 		# the product model.
 		#item.brand = jso['Brand']
 		item.save()
+		print(item)
 		return item
