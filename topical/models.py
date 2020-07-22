@@ -11,6 +11,7 @@ class Product(models.Model):
 
 class Ingredient(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
+	image_url = models.CharField(max_length = MAX_DESCRIPTION_LEN, null =  True)
 	slug = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, null = True)
 	in_products = models.ManyToManyField(to = Product, symmetrical = True, related_name = 'ingredients')
