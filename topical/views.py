@@ -1,8 +1,11 @@
+from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from .models import IngredientName, Product, Ingredient, User
 #from django.db.models import Q
 from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.http import JsonResponse
+
+from .foreign import get_product_or_create
 
 # Create your views here.
 """
@@ -12,7 +15,7 @@ Will need a try/except for products that aren't in the db yet
 def search_products(request):
     name_q = request.GET.get('name')
     upc_q = request.GET.get('upc')
-    print(name_q)
+    print(upc_q)
     common_set = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrence", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
     common_names = IngredientName.objects.filter(name__in = common_set)
     common_allergens = Ingredient.objects.filter(names__in = common_names)
@@ -48,6 +51,9 @@ def search_products(request):
                     obj['violations'].append(violation_data)
             response['results'].append(obj)
     if upc_q is not None:
+        product = get_product_or_create(upc_q)
+        if type(product) is HttpResponse:
+            return product
         return redirect(f'/api/product/{upc_q}/')
     return JsonResponse(response)
 
