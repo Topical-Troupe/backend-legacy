@@ -29,7 +29,7 @@ def get_product_or_create(upc):
 		item = Product()
 		item.name = jso['Title']
 		if len(jso["Images"]) != 0:
-			item.image_url = jso["Images"]["0"]
+			item.image_url = jso["Images"][0]
 		item.upc = upc
 		# Uncomment this line if we want to add the brand to
 		# the product model.
