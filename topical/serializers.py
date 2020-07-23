@@ -25,6 +25,17 @@ class IngredientSerializer(serializers.HyperlinkedModelSerializer):
 			IngredientName.objects.create(ingredient=ingredient, **name_data)
 		return ingredient
 
+	#def update(self, instance, validated_data):
+	#	ingredient = instance
+	#	names_data = validated_data.pop('names', [])
+	#	for key, value in validated_data.items():
+	#		setattr(ingredient, key, value)
+	#	ingredient.save()
+	#	for name_data in names_data:
+	#		if len(IngredientName.objects.filter(name__iexact = name_data.get('name'))):
+	#			continue
+	#		IngredientName.objects.create(ingredient=ingredient, **name_data)
+	#	return ingredient
 
 	class Meta:
 		model = Ingredient
