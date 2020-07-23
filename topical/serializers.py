@@ -28,4 +28,4 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
 	ingredients = IngredientSerializer(read_only = True, many = True, required = False, default = [])
 	class Meta:
 		model = Product
-		fields = ['name', 'upc', 'description', 'ingredients'] 
+		fields = ['name', 'upc', 'image_url', 'description', 'ingredients'] 
