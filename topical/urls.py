@@ -33,5 +33,6 @@ urlpatterns = [
 	path('api/', include(router.urls)),
 	path('api/me/', UserViewSet.as_view({ 'get': 'me' }), name = 'me'),
 	path('api/search/', topical_views.search_products, name='search_products'),
-	path('api/ingredient/fuzzy/<str:fuzzy>/', topical_views.fuzzy_name, name = 'fuzzy_name')
+	path('api/ingredient/fuzzy/<str:fuzzy>/', topical_views.fuzzy_name, name = 'fuzzy_name'),
+	path('api/product/notfound/<str:upc>/', topical_views.product_404, name = 'product-404')
 ]

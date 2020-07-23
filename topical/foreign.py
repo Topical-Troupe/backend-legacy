@@ -1,6 +1,7 @@
 from json import loads as jsonload
 from urllib.request import urlopen
 from django.http import HttpResponse
+from django.shortcuts import redirect
 
 from .models import Product
 
@@ -25,9 +26,9 @@ def get_product_or_create(upc):
 		try:
 			response = get_product_info(upc)
 		except:
-			return HttpResponse(status = 404)
+			return redirect(f'/api/product/notfound/{upc}/')
 		if response['Code'] != 'Ok' or len(response['Items']) == 0:
-			return HttpResponse(status = 404)
+			return redirect(f'/api/product/notfound/{upc}/')
 		jso = response['Items'][0]
 		item = Product()
 		item.name = jso['Title']
