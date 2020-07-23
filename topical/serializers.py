@@ -15,6 +15,17 @@ class RelatedNameSerializer(serializers.ModelSerializer):
 class IngredientSerializer(serializers.HyperlinkedModelSerializer):
 	slug = serializers.ReadOnlyField()
 	names = RelatedNameSerializer(read_only = False, many = True, required = False, default = [])
+
+	def create(self, validated_data):
+		names_data = validated_data.pop('names',[])
+		ingredient = Ingredient.objects.create(**validated_data)
+		for name_data in names_data:
+			if len(IngredientName.objects.filter(name__iexact = name_data.get('name'))):
+				continue
+			IngredientName.objects.create(ingredient=ingredient, **name_data)
+		return ingredient
+
+
 	class Meta:
 		model = Ingredient
 		fields = ['name', 'slug', 'names', 'description']
