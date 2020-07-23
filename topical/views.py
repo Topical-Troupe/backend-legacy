@@ -54,7 +54,7 @@ def search_products(request):
     if upc_q is not None:
         product = get_product_or_create(upc_q)
         if type(product) is HttpResponse:
-            return product
+            return redirect(f'/api/product/notfound/{upc_q}/')
         return redirect(f'/api/product/{upc_q}/')
     return JsonResponse(response)
 
