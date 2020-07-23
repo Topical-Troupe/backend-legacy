@@ -13,7 +13,6 @@ def get_product_info(upc):
 
 def get_product_or_create(upc):
 	item = Product.objects.filter(upc = upc)
-	print(item, upc)
 	if len(item) == 0:
 		if len(upc) == 13 and upc[0] == '0':
 			item = Product.objects.filter(upc = upc[1:])
