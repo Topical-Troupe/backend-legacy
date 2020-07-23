@@ -67,11 +67,10 @@ def product_404(request, upc):
     if len(Product.objects.filter(upc = upc)) != 0:
         return HttpResponse(status = 409)
     if request.method == 'GET':
-        return JsonResponse({ 'info': 'That product was not found! Please add at least the name', 'upc': upc })
-    if request.method == 'POST':
-        product = Product()
-        product.upc = upc
-        json = json_load(request.body)
-        product.name = json['name']
-        product.description = json['description'] or None
-        product.save()
+        return JsonResponse({
+            'info': 'That product was not found! Please POST it with at least the name and UPC included.',
+            'upc': {upc},
+            'url': '/api/product/'
+        })
+    else:
+        return HttpResponse(status = 405)
