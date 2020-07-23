@@ -8,10 +8,10 @@ class Product(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, null = True)
 	upc = models.CharField(max_length = 14, null = True, unique = True)
+	image_url = models.CharField(max_length = MAX_DESCRIPTION_LEN, null =  True)
 
 class Ingredient(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
-	image_url = models.CharField(max_length = MAX_DESCRIPTION_LEN, null =  True)
 	slug = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, null = True)
 	in_products = models.ManyToManyField(to = Product, symmetrical = True, related_name = 'ingredients')
