@@ -64,6 +64,8 @@ def fuzzy_name(request, fuzzy):
 	return redirect(f'/api/ingredient/{ingredient.slug}/')
 
 def product_404(request, upc):
+    if len(upc) < 12 or len(upc) > 13:
+        return HttpResponse(status = 406)
     if len(Product.objects.filter(upc = upc)) != 0:
         return HttpResponse(status = 409)
     if request.method == 'GET':
