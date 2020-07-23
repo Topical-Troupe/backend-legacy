@@ -4,6 +4,7 @@ from .models import IngredientName, Product, Ingredient, User
 #from django.db.models import Q
 from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.http import JsonResponse
+from json import loads as json_load
 
 from .foreign import get_product_or_create
 
@@ -53,7 +54,7 @@ def search_products(request):
     if upc_q is not None:
         product = get_product_or_create(upc_q)
         if type(product) is HttpResponse:
-            return product
+            return redirect(f'/api/product/notfound/{upc_q}/')
         return redirect(f'/api/product/{upc_q}/')
     return JsonResponse(response)
 
@@ -61,3 +62,17 @@ def fuzzy_name(request, fuzzy):
 	result = IngredientName.objects.filter(name__iexact = fuzzy)
 	ingredient = get_object_or_404(Ingredient, names__in = result)
 	return redirect(f'/api/ingredient/{ingredient.slug}/')
+
+def product_404(request, upc):
+    if len(upc) < 12 or len(upc) > 13:
+        return HttpResponse(status = 406)
+    if len(Product.objects.filter(upc = upc)) != 0:
+        return HttpResponse(status = 409)
+    if request.method == 'GET':
+        return JsonResponse({
+            'info': 'That product was not found! Please POST it with at least the name and UPC included.',
+            'upc': {upc},
+            'url': '/api/product/'
+        })
+    else:
+        return HttpResponse(status = 405)
