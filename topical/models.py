@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
 
 MAX_DESCRIPTION_LEN = 8192
 MAX_NAME_LEN = 512
@@ -48,8 +48,26 @@ class IngredientName(models.Model):
 
 DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrence", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
 
-class User(AbstractUser):
-	excluded_ingredients = models.ManyToManyField(to = Ingredient, symmetrical = True, related_name = 'excluded_by', blank = True, default = None)
+class UserManager(BaseUserManager):
 	def get_default_exclusions():
 		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
 		return Ingredient.objects.filter(names__in = common_names).all()
+	def create(self, *args, **kwargs):
+		print('creating a user!!')
+		print(kwargs)
+		output = super(UserManager, self).create(*args, **kwargs)
+		if 'excluded_ingredients' not in kwargs:
+			output.excluded_ingredients = UserManager.get_default_exclusions()
+		return output
+	def create_user(self, username, email, password, **extra_fields):
+		print('creating a user!!')
+		print(extra_fields)
+		if 'excluded_ingredients' not in extra_fields:
+			extra_fields['excluded_ingredients'] = UserManager.get_default_exclusions()
+		else:
+			print(extra_fields['excluded_ingredients'])
+		return super(UserManager, self).create_user(username = username, email = email, password = password, **extra_fields)
+
+class User(AbstractUser):
+	objects = UserManager()
+	excluded_ingredients = models.ManyToManyField(to = Ingredient, symmetrical = True, related_name = 'excluded_by', blank = True)
