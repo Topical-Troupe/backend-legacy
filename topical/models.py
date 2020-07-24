@@ -13,7 +13,7 @@ class Product(models.Model):
 class Ingredient(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
 	slug = models.CharField(max_length = MAX_NAME_LEN, unique = True)
-	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, null = True)
+	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, blank = True)
 	in_products = models.ManyToManyField(to = Product, symmetrical = True, related_name = 'ingredients')
 	def save(self, *args, **kwargs):
 		self.slug = self.generate_slug()
