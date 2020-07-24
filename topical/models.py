@@ -53,20 +53,10 @@ class UserManager(BaseUserManager):
 		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
 		return Ingredient.objects.filter(names__in = common_names).all()
 	def create(self, *args, **kwargs):
-		print('creating a user!!')
-		print(kwargs)
 		output = super(UserManager, self).create(*args, **kwargs)
-		if 'excluded_ingredients' not in kwargs:
-			output.excluded_ingredients = UserManager.get_default_exclusions()
+		for ingredient in UserManager.get_default_exclusions():
+			output.excluded_ingredients.add(ingredient)
 		return output
-	def create_user(self, username, email, password, **extra_fields):
-		print('creating a user!!')
-		print(extra_fields)
-		if 'excluded_ingredients' not in extra_fields:
-			extra_fields['excluded_ingredients'] = UserManager.get_default_exclusions()
-		else:
-			print(extra_fields['excluded_ingredients'])
-		return super(UserManager, self).create_user(username = username, email = email, password = password, **extra_fields)
 
 class User(AbstractUser):
 	objects = UserManager()
