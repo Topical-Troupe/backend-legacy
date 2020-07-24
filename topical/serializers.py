@@ -18,7 +18,7 @@ class IngredientSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Ingredient
-		fields = ['name', 'url', 'slug', 'names', 'description']	
+		fields = ['name', 'slug', 'names', 'description']	
 	
 	def create(self, validated_data):
 		names_data = validated_data.pop('names',[])
