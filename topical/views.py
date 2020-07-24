@@ -20,6 +20,9 @@ def search_products(request):
         'results': []
     }
     if request.user.is_authenticated:
+        if len(request.user.excluded_ingredients.all()) == 0:
+            for ingredient in User.get_default_exclusions():
+                request.user.excluded_ingredients.add(ingredient)
         excluded_ingredients = request.user.excluded_ingredients
     else:
         excluded_ingredients = User.get_default_exclusions()

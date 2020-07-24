@@ -1,8 +1,16 @@
 from django.db import models
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, UserManager as BaseUserManager
 
 MAX_DESCRIPTION_LEN = 8192
 MAX_NAME_LEN = 512
+
+DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrence", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
+
+class User(AbstractUser):
+	def get_default_exclusions():
+		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
+		return Ingredient.objects.filter(names__in = common_names).all()
 
 class Product(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
@@ -15,6 +23,7 @@ class Ingredient(models.Model):
 	slug = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, blank = True)
 	in_products = models.ManyToManyField(to = Product, symmetrical = True, related_name = 'ingredients')
+	excluded_by = models.ManyToManyField(to = get_user_model(), symmetrical = True, related_name = 'excluded_ingredients', blank = True)
 	def save(self, *args, **kwargs):
 		self.slug = self.generate_slug()
 		basename = self.ensure_basename()
@@ -45,19 +54,3 @@ class IngredientName(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	def __str__(self):
 		return self.name
-
-DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrence", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
-
-class UserManager(BaseUserManager):
-	def get_default_exclusions():
-		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
-		return Ingredient.objects.filter(names__in = common_names).all()
-	def create(self, *args, **kwargs):
-		output = super(UserManager, self).create(*args, **kwargs)
-		for ingredient in UserManager.get_default_exclusions():
-			output.excluded_ingredients.add(ingredient)
-		return output
-
-class User(AbstractUser):
-	objects = UserManager()
-	excluded_ingredients = models.ManyToManyField(to = Ingredient, symmetrical = True, related_name = 'excluded_by', blank = True)
