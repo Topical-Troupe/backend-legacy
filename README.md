@@ -45,6 +45,24 @@ Topical is an API
 
 `api/me/` – gets the profile of the current user
 
+`api/user/exclusions` – gets all ingredients excluded by the user.
+
+#### GET response
+
+```json
+{
+  "count": int,
+  "items": [
+    {
+      "name": string,
+      "slug": string,
+      "names": [string]
+    },
+    ...
+  ]
+}
+```
+
 ## Models
 
 ### User
