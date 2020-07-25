@@ -29,7 +29,14 @@ class ProductViewSet(viewsets.ModelViewSet):
 				many = True,
 				context = { 'context': request }
 			)
-			return Response(serializer.data)
+			if len(request.user.excluded_ingredients) != 0:
+				forbidden_ingredients = request.user.excluded_ingredients.names
+				violations = IngredientSerializer(
+					product.ingredients.filter(name__in = forbidden_ingredients, many = True)
+				)
+			else:
+				violations = []
+			return Response(violations.data, serializer.data)
 		if request.method == 'POST':
 			if not request.user.is_staff:
 				return HttpResponse(status = 401)
