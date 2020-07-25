@@ -1,10 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from .models import IngredientName, Product, Ingredient, User
-#from django.db.models import Q
-from django.contrib.postgres.search import SearchQuery, SearchVector
 from django.http import JsonResponse
-from json import loads as json_load
 
 from .foreign import get_product_or_create
 
@@ -17,18 +14,18 @@ def search_products(request):
     name_q = request.GET.get('name')
     upc_q = request.GET.get('upc')
     print(upc_q)
-    common_set = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrence", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
-    common_names = IngredientName.objects.filter(name__in = common_set)
-    common_allergens = Ingredient.objects.filter(names__in = common_names)
     excluded_ingredients = None
     response = {
         'count': 0,
         'results': []
     }
     if request.user.is_authenticated:
+        if len(request.user.excluded_ingredients.all()) == 0:
+            for ingredient in User.get_default_exclusions():
+                request.user.excluded_ingredients.add(ingredient)
         excluded_ingredients = request.user.excluded_ingredients
     else:
-        excluded_ingredients = common_allergens
+        excluded_ingredients = User.get_default_exclusions()
     if name_q is not None:
         products = Product.objects.filter(name__icontains = name_q)
         response['count'] = len(products)
