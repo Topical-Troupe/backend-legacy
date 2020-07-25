@@ -80,4 +80,25 @@ class UserViewSet(viewsets.ModelViewSet):
 			context = { 'context': request }
 		)
 		return Response(serializer.data)
+	@action(detail = False, methods = ['GET'])
+	def exclusions(self, request):
+		exclusions = None
+		if request.user.is_authenticated:
+			exclusions = request.user.excluded_ingredients.all()
+		else:
+			exclusions = User.get_default_exclusions()
+		response = {
+			'count': len(exclusions),
+			'items': []
+		}
+		for ingredient in exclusions:
+			json_ing = {
+				'name': ingredient.name,
+				'slug': ingredient.slug,
+				'names': []
+			}
+			for name in ingredient.names.all():
+				json_ing['names'].append(name)
+			response['items'].append(json_ing)
+		return JsonResponse(response)
 router.register('user', UserViewSet)
