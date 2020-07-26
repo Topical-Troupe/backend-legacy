@@ -29,13 +29,23 @@ class ProductViewSet(viewsets.ModelViewSet):
 				many = True,
 				context = { 'context': request }
 			)
-			if len(request.user.excluded_ingredients) != 0:
-				forbidden_ingredients = request.user.excluded_ingredients.names
-				violations = IngredientSerializer(
-					product.ingredients.filter(name__in = forbidden_ingredients, many = True)
-				)
+			if request.user.is_authenticated:
+				if len(request.user.excluded_ingredients.all()) == 0:
+					for ingredient in User.get_default_exclusions():
+						request.user.excluded_ingredients.add(ingredient)
+				excluded_ingredients = request.user.excluded_ingredients
 			else:
-				violations = []
+				excluded_ingredients = User.get_default_exclusions()
+
+			fuzzy_names = []
+			for ingredient in excluded_ingredients:
+				names = ingredient.names.all()
+				for name in names:
+					fuzzy_names.append(name)
+			violations = IngredientSerializer(
+				product.ingredients.filter(name__in = fuzzy_names, many = True)
+			)
+	
 			return Response(violations.data, serializer.data)
 		if request.method == 'POST':
 			if not request.user.is_staff:
