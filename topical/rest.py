@@ -38,15 +38,14 @@ class ProductViewSet(viewsets.ModelViewSet):
 				excluded_ingredients = User.get_default_exclusions()
 
 			fuzzy_names = []
-			for ingredient in excluded_ingredients:
+			for ingredient in excluded_ingredients.all():
 				names = ingredient.names.all()
 				for name in names:
 					fuzzy_names.append(name)
-			violations = IngredientSerializer(
-				product.ingredients.filter(name__in = fuzzy_names, many = True)
-			)
-	
-			return Response(violations.data, serializer.data)
+			violations = product.ingredients.filter(name__in = fuzzy_names)
+			warning = IngredientSerializer(
+				violations.all(), many = True)
+			return Response(serializer.data, warning.data)
 		if request.method == 'POST':
 			if not request.user.is_staff:
 				return HttpResponse(status = 401)
