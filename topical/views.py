@@ -5,6 +5,16 @@ from django.http import JsonResponse
 
 from .foreign import get_product_or_create
 
+def setup_user(request):
+    user = User.objects.get(username = request.user.username)
+    if not user.is_setup:
+        print('setting up user')
+        for ingredient in User.get_default_exclusions():
+            user.excluded_ingredients.add(ingredient)
+        user.is_setup = True
+        user.save()
+    return HttpResponse(status = 200)
+
 # Create your views here.
 """
 First, I'm going to write this assuming that I am getting a UPC in the query.  
@@ -20,9 +30,7 @@ def search_products(request):
         'results': []
     }
     if request.user.is_authenticated:
-        if len(request.user.excluded_ingredients.all()) == 0:
-            for ingredient in User.get_default_exclusions():
-                request.user.excluded_ingredients.add(ingredient)
+        setup_user(request)
         excluded_ingredients = request.user.excluded_ingredients
     else:
         excluded_ingredients = User.get_default_exclusions()
