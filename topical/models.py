@@ -5,7 +5,7 @@ from django.contrib.auth.models import AbstractUser
 MAX_DESCRIPTION_LEN = 8192
 MAX_NAME_LEN = 512
 
-DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "Fragrence", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
+DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrance", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
 
 class User(AbstractUser):
 	def get_default_exclusions():
