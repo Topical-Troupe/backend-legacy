@@ -59,3 +59,11 @@ class IngredientName(models.Model):
 class Tag(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	products = models.ManyToManyField(to = Product, symmetrical = True, related_name = 'tags', blank = True)
+	def by_name(name):
+		if len(Tag.objects.filter(name = name.lower())) == 0:
+			tag = Tag()
+			tag.name = name.lower()
+			tag.save()
+			return tag
+		else:
+			return Tag.objects.get(name = name.lower())

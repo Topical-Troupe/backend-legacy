@@ -5,7 +5,7 @@ from rest_framework import routers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Lower
-from .models import Ingredient, Product, User
+from .models import Ingredient, Product, Tag, User
 from .serializers import IngredientSerializer, ProductSerializer, UserSerializer
 from .views import setup_user
 
@@ -88,8 +88,15 @@ class ProductViewSet(viewsets.ModelViewSet):
 				response.append(tag.name)
 			return JsonResponse(response)
 		data = json.loads(request.body)
+		tag = Tag.by_name(data['name'])
 		if request.method == 'POST':
-			pass
+			if tag not in product.tags.all():
+				product.tags.add(tag)
+			return HttpResponse(status = 200)
+		if request.method == 'DELETE':
+			if tag in product.tags.all():
+				product.tags.remove(tag)
+			return HttpResponse(status = 200)
 router.register('product', ProductViewSet)
 
 class UserViewSet(viewsets.ModelViewSet):
