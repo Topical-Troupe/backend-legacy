@@ -4,9 +4,10 @@ import json
 from rest_framework import routers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from django.db.models.functions import Lower
 from .models import Ingredient, Product, User
 from .serializers import IngredientSerializer, ProductSerializer, UserSerializer
+from .views import setup_user
 
 router = routers.DefaultRouter()
 
@@ -44,12 +45,53 @@ class ProductViewSet(viewsets.ModelViewSet):
 	def ingredients(self, request, upc):
 		product = get_object_or_404(Product, upc = upc)
 		if request.method == 'GET':
-			serializer = IngredientSerializer(
-				product.ingredients.all(),
-				many = True,
-				context = { 'context': request }
-			)
-			return Response(serializer.data)
+			response = {
+				'violations': [],
+				'ingredient_list': []
+			}
+			"""
+			Set user restrictions: can be removed in production as it is redundant with views.py/search_products
+			"""
+			if request.user.is_authenticated:
+				setup_user(request)
+
+			else:
+				excluded_ingredients = User.get_default_exclusions()
+			"""
+			Set all excluded fuzzy names to lower case and create a list for comparison
+			"""
+			fuzzy_names = []
+			for ingredient in excluded_ingredients.all():
+				names = ingredient.names.all()
+				lc_names = names.annotate(name_lower=Lower('name'))
+				for name in lc_names:
+					fuzzy_names.append(name.name_lower)
+			"""
+			Set all product ingredient names to lower case and create a list for comparison
+			"""
+			lower_ingredients = []
+			ingredients = product.ingredients.all()
+			lc_ingredients = ingredients.annotate(name_lower=Lower('name'))
+			for ingredient in lc_ingredients:
+				lower_ingredients.append(ingredient.name_lower)
+			"""
+			Compare excluded items to product ingredients and make a list of violations
+			"""
+			for ingredient in lower_ingredients:
+				if ingredient in fuzzy_names:
+					response['violations'].append(ingredient)
+			"""
+			Create objects to be returned as full ingredient list
+			"""
+			ingredients = product.ingredients.all()
+			for ingredient in ingredients:
+				obj = {
+					'name': ingredient.name,
+					'slug': ingredient.slug,
+					'description': ingredient.description
+				}
+				response['ingredient_list'].append(obj)			
+			return JsonResponse(response)
 		if request.method == 'POST':
 			if not request.user.is_staff:
 				return HttpResponse(status = 401)
