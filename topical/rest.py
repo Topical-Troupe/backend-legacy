@@ -52,9 +52,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 			excluded_ingredients = None
 			if request.user.is_authenticated:
 				setup_user(request)
-				excluded_ingredients = User.excluded_ingredients.all()
+				excluded_ingredients = request.user.excluded_ingredients.all()
 			else:
-				excluded_ingredients = User.get_default_exclusions().all()
+				excluded_ingredients = User.get_default_exclusions()
 			for ingredient in product.ingredients.all():
 				ing_obj = {
 					'name': ingredient.name,
