@@ -24,15 +24,13 @@ class ProductViewSet(viewsets.ModelViewSet):
 	def ingredients(self, request, upc):
 		product = get_object_or_404(Product, upc = upc)
 		if request.method == 'GET':
-			#response = {
-			#	'violations': [],
-			#	'ingredient_list': []
-			#}
-			serializer = IngredientSerializer(
-				product.ingredients.all(),
-				many = True,
-				context = { 'context': request }
-			)
+			response = {
+				'violations': [],
+				'ingredient_list': []
+			}
+			"""
+			Set user restrictions: can be removed in production as it is redundant with views.py/search_products
+			"""
 			if request.user.is_authenticated:
 				if len(request.user.excluded_ingredients.all()) == 0:
 					for ingredient in User.get_default_exclusions():
@@ -41,45 +39,41 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 			else:
 				excluded_ingredients = User.get_default_exclusions()
-				print("anonymous user")
-
+			"""
+			Set all excluded fuzzy names to lower case and create a list for comparison
+			"""
 			fuzzy_names = []
 			for ingredient in excluded_ingredients.all():
 				names = ingredient.names.all()
 				lc_names = names.annotate(name_lower=Lower('name'))
 				for name in lc_names:
 					fuzzy_names.append(name.name_lower)
-
+			"""
+			Set all product ingredient names to lower case and create a list for comparison
+			"""
 			lower_ingredients = []
 			ingredients = product.ingredients.all()
 			lc_ingredients = ingredients.annotate(name_lower=Lower('name'))
 			for ingredient in lc_ingredients:
 				lower_ingredients.append(ingredient.name_lower)
-			print("lower case ingredients")
-			print(lower_ingredients)
-
-			flagged_ingredients = []
-
+			"""
+			Compare excluded items to product ingredients and make a list of violations
+			"""
 			for ingredient in lower_ingredients:
-				print("ingredient")
-				print(ingredient)
 				if ingredient in fuzzy_names:
-					print("FOUND ONE!!!!!!!!!!!!!!!!!!!")
-					print(ingredient)
-					flagged_ingredients.append(ingredient)
-					#response['violations'].append(ingredient)
-			print("Flagged:")
-			print(flagged_ingredients)
-			ingredient_list = product.ingredients.all()
-			print("ingredient list")
-			print(ingredient_list)
-			violations = product.ingredients.filter(name__in = fuzzy_names)
-			print("violations:")
-			print(violations)
-			warning = IngredientSerializer(
-				excluded_ingredients.all(), many = True, context = { 'context': request })
-			return Response(warning.data)
-
+					response['violations'].append(ingredient)
+			"""
+			Create objects to be returned as full ingredient list
+			"""
+			ingredients = product.ingredients.all()
+			for ingredient in ingredients:
+				obj = {
+					'name': ingredient.name,
+					'slug': ingredient.slug,
+					'description': ingredient.description
+				}
+				response['ingredient_list'].append(obj)			
+			return JsonResponse(response)
 		if request.method == 'POST':
 			if not request.user.is_staff:
 				return HttpResponse(status = 401)
