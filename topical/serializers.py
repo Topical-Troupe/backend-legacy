@@ -41,8 +41,6 @@ class IngredientSerializer(serializers.HyperlinkedModelSerializer):
 			IngredientName.objects.create(ingredient=ingredient, **name_data)
 		return ingredient
 
-
-
 class IngredientNameSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = IngredientName
