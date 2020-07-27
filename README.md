@@ -92,9 +92,9 @@ Topical is an API
 
 ```json
 {
-  "name": string,
-  "brand": string,
-  "ingredients": [Ingredient]
+    "name": string,
+    "upc": string,
+    "description": string
 }
 ```
 
