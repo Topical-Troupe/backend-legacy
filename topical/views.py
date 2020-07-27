@@ -30,14 +30,14 @@ def search_products(request):
     else:
         excluded_ingredients = User.get_default_exclusions()
     if name_q is not None:
-        tags = Tag.objects.filter(name__iexact = name_q.lower().split())
+        #tags = Tag.objects.filter(name__contains = name_q.split())
         products = Product.objects.filter(
-            Q(tag__in = tags) |
+            #Q(tags__name__in = tags) |
             Q(name__search = name_q) |
             Q(description__search = name_q) |
-            Q(ingredients__names__search = name_q)
+            Q(ingredients__names__name__search = name_q)
         )
-        response['count'] = len(products)
+        response['count'] = len(products.all())
         for product in products.all():
             obj = {
                 'upc': product.upc,
