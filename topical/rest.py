@@ -88,7 +88,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 				response.append(tag.name)
 			return JsonResponse(response)
 		data = json.loads(request.body)
-		tag = Tag.by_name(data['name'])
+		tag = Tag.by_name(data['tags'])
 		if request.method == 'POST':
 			if tag not in product.tags.all():
 				product.tags.add(tag)
