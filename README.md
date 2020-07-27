@@ -14,13 +14,56 @@ Topical is an API
 
 `api/ingredient/fuzzy/<str>/` – Gets an ingredient by any of its names; redirects to the ingredient's proper endpoint.
 
+`api/ingredient/<slug>/exclude/` – Check or set whether an ingredient is excluded by the logged in user. Allows `GET`, `POST`, and `DELETE` methods.
+
+##### GET response
+
+```json
+{ "excluded": boolean }
+```
+
 #### Product
 
-`api/product/<upc>/ingredients/` – View or change the list of ingredients on a product. Supports `GET`, `POST`, and `DELETE` methods. To `POST` or `DELETE`, send a JSON body with a list `names` containing fuzzy names of the ingredients to add or remove (e.g. `{ "names": ["sls"] }`).
+`api/product/<upc>/ingredients/` – View or change the list of ingredients on a product. Allows `GET`, `POST`, and `DELETE` methods.
+
+##### GET response
+
+```json
+[
+  {Ingredient},
+  ...
+]
+```
+
+##### POST/DELETE body
+
+```json
+{ "names": [string] }
+```
 
 ### User
 
 `api/me/` – gets the profile of the current user
+
+`api/usersetup/` – sets up the logged in user. This should be done after creating a user, but Django gets angry at me when I try to do this myself. :(
+
+`api/user/exclusions` – gets all ingredients excluded by the user.
+
+#### GET response
+
+```json
+{
+  "count": int,
+  "items": [
+    {
+      "name": string,
+      "slug": string,
+      "names": [string]
+    },
+    ...
+  ]
+}
+```
 
 ## Models
 
@@ -28,10 +71,10 @@ Topical is an API
 
 ```json
 {
-  'username': string,
-  'first_name': string,
-  'last_name': string,
-  'excluded_ingredients': [Ingredient]
+  "username": string,
+  "first_name": string,
+  "last_name": string,
+  "excluded_ingredients": [Ingredient]
 }
 ```
 
@@ -39,9 +82,9 @@ Topical is an API
 
 ```json
 {
-  'name': string,
-  'description': string,
-  'names': [IngredientName]
+  "name": string,
+  "description": string,
+  "names": [IngredientName]
 }
 ```
 
@@ -49,9 +92,9 @@ Topical is an API
 
 ```json
 {
-  'name': string,
-  'brand': string,
-  'ingredients': [Ingredient]
+  "name": string,
+  "brand": string,
+  "ingredients": [Ingredient]
 }
 ```
 
@@ -61,17 +104,13 @@ Topical is an API
 
 ```json
 {
-  'count': int,
-  'results': [
+  "count": int,
+  "results": [
     {
-      'upc': str,
-      'name': str,
-      'violations': [
-        {
-          'slug': str,
-          'description': str,
-          'names': [str]
-        }, ...
+      "upc": str,
+      "name": str,
+      "violations": [
+        {Ingredient}, ...
       ]
     }, ...
   ]
