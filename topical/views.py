@@ -30,9 +30,9 @@ def search_products(request):
     else:
         excluded_ingredients = User.get_default_exclusions()
     if name_q is not None:
-        #tags = Tag.objects.filter(name__contains = name_q.split())
+        tags = Tag.objects.filter(name__contains = name_q.split())
         products = Product.objects.filter(
-            #Q(tags__name__in = tags) |
+            Q(tags__in = tags) |
             Q(name__search = name_q) |
             Q(description__search = name_q) |
             Q(ingredients__names__name__search = name_q)
