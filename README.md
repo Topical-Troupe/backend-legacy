@@ -29,13 +29,13 @@ Topical is an API
 ##### GET response
 
 ```json
-[
-  {Ingredient},
-  ...
-]
+{
+    "violations": [string],
+    "ingredient_list": [Ingredient]
+}
 ```
 
-##### POST/DELETE body
+##### POST/DELETE request body
 
 ```json
 { "names": [string] }
@@ -92,9 +92,9 @@ Topical is an API
 
 ```json
 {
-  "name": string,
-  "brand": string,
-  "ingredients": [Ingredient]
+    "name": string,
+    "upc": string,
+    "description": string
 }
 ```
 

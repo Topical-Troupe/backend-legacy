@@ -15,11 +15,6 @@ def setup_user(request):
         user.save()
     return HttpResponse(status = 200)
 
-# Create your views here.
-"""
-First, I'm going to write this assuming that I am getting a UPC in the query.  
-Will need a try/except for products that aren't in the db yet
-"""
 def search_products(request):
     name_q = request.GET.get('name')
     upc_q = request.GET.get('upc')
