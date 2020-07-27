@@ -49,48 +49,24 @@ class ProductViewSet(viewsets.ModelViewSet):
 				'violations': [],
 				'ingredient_list': []
 			}
-			"""
-			Set user restrictions: can be removed in production as it is redundant with views.py/search_products
-			"""
+			excluded_ingredients = None
 			if request.user.is_authenticated:
 				setup_user(request)
-
+				excluded_ingredients = request.user.excluded_ingredients.all()
 			else:
 				excluded_ingredients = User.get_default_exclusions()
-			"""
-			Set all excluded fuzzy names to lower case and create a list for comparison
-			"""
-			fuzzy_names = []
-			for ingredient in excluded_ingredients.all():
-				names = ingredient.names.all()
-				lc_names = names.annotate(name_lower=Lower('name'))
-				for name in lc_names:
-					fuzzy_names.append(name.name_lower)
-			"""
-			Set all product ingredient names to lower case and create a list for comparison
-			"""
-			lower_ingredients = []
-			ingredients = product.ingredients.all()
-			lc_ingredients = ingredients.annotate(name_lower=Lower('name'))
-			for ingredient in lc_ingredients:
-				lower_ingredients.append(ingredient.name_lower)
-			"""
-			Compare excluded items to product ingredients and make a list of violations
-			"""
-			for ingredient in lower_ingredients:
-				if ingredient in fuzzy_names:
-					response['violations'].append(ingredient)
-			"""
-			Create objects to be returned as full ingredient list
-			"""
-			ingredients = product.ingredients.all()
-			for ingredient in ingredients:
-				obj = {
+			for ingredient in product.ingredients.all():
+				ing_obj = {
 					'name': ingredient.name,
 					'slug': ingredient.slug,
-					'description': ingredient.description
+					'description': ingredient.description,
+					'names': []
 				}
-				response['ingredient_list'].append(obj)			
+				for name in ingredient.names.all():
+					ing_obj['names'].append(name.name)
+				if ingredient in excluded_ingredients:
+					response['violations'].append(ingredient.name)
+				response['ingredient_list'].append(ing_obj)		
 			return JsonResponse(response)
 		if request.method == 'POST':
 			if not request.user.is_staff:

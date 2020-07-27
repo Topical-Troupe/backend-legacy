@@ -63,13 +63,6 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'topical.urls'
 
-if DEBUG:
-    CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = [
-    'http://topical.netlify.app'
-]
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -146,6 +139,15 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
+
+#CORS settings
+if DEBUG:
+    CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://topical.netlify.app'
+]
+
 
 # Heroku settings
 import django_heroku

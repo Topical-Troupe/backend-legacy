@@ -41,15 +41,12 @@ class IngredientSerializer(serializers.HyperlinkedModelSerializer):
 			IngredientName.objects.create(ingredient=ingredient, **name_data)
 		return ingredient
 
-
-
 class IngredientNameSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = IngredientName
 		fields = ['name', 'ingredient']
 
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
-	ingredients = IngredientSerializer(read_only = True, many = True, required = False, default = [])
 	class Meta:
 		model = Product
 		fields = ['name', 'upc', 'image_url', 'description'] 
