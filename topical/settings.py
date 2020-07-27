@@ -67,7 +67,7 @@ if DEBUG:
     CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = [
-    #add the deployed app here
+    'topical.netlify.app'
 ]
 
 TEMPLATES = [
