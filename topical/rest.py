@@ -43,9 +43,10 @@ class ProductViewSet(viewsets.ModelViewSet):
 				for name in names:
 					fuzzy_names.append(name)
 			violations = product.ingredients.filter(name__in = fuzzy_names)
+			#violations = product.ingredients.all()
 			warning = IngredientSerializer(
-				violations.all(), many = True)
-			return Response(serializer.data, warning.data)
+				violations.all(), many = True, context = { 'context': request })
+			return Response(warning.data)
 		if request.method == 'POST':
 			if not request.user.is_staff:
 				return HttpResponse(status = 401)
