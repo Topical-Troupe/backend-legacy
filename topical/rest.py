@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from django.db.models.functions import Lower
 from .models import Ingredient, Product, User
 from .serializers import IngredientSerializer, ProductSerializer, UserSerializer
+from .views import setup_user
 
 router = routers.DefaultRouter()
 
@@ -52,10 +53,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 			Set user restrictions: can be removed in production as it is redundant with views.py/search_products
 			"""
 			if request.user.is_authenticated:
-				if len(request.user.excluded_ingredients.all()) == 0:
-					for ingredient in User.get_default_exclusions():
-						request.user.excluded_ingredients.add(ingredient)
-				excluded_ingredients = request.user.excluded_ingredients
+				setup_user(request)
 
 			else:
 				excluded_ingredients = User.get_default_exclusions()
