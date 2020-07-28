@@ -15,7 +15,10 @@ from pathlib import Path
 
 import environ
 
-env = environ.Env(DEBUG = (bool, False))
+env = environ.Env(
+    DEBUG = (bool, False),
+    LOCAL = (bool, False)
+)
 environ.Env.read_env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
