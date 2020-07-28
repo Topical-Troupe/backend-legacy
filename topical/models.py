@@ -8,7 +8,7 @@ MAX_NAME_LEN = 512
 DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrance", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
 
 class User(AbstractUser):
-	is_setup = models.BooleanField()
+	is_setup = models.BooleanField(default=False)
 	def get_default_exclusions():
 		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
 		return Ingredient.objects.filter(names__in = common_names).all()
