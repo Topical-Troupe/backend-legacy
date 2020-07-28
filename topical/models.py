@@ -8,7 +8,7 @@ MAX_NAME_LEN = 512
 DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrance", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
 
 class User(AbstractUser):
-	is_setup = models.BooleanField()
+	is_setup = models.BooleanField(default=False)
 	def get_default_exclusions():
 		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
 		return Ingredient.objects.filter(names__in = common_names).all()
@@ -55,3 +55,15 @@ class IngredientName(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	def __str__(self):
 		return self.name
+
+class Tag(models.Model):
+	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)
+	products = models.ManyToManyField(to = Product, symmetrical = True, related_name = 'tags', blank = True)
+	def by_name(name):
+		if len(Tag.objects.filter(name = name.lower())) == 0:
+			tag = Tag()
+			tag.name = name.lower()
+			tag.save()
+			return tag
+		else:
+			return Tag.objects.get(name = name.lower())

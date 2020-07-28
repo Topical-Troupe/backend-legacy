@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.postgres',
 
     'rest_framework',
     'rest_framework.authtoken',
@@ -62,13 +63,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'topical.urls'
-
-if DEBUG:
-    CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True
-CORS_ORIGIN_WHITELIST = [
-    'http://topical.netlify.app'
-]
 
 TEMPLATES = [
     {
@@ -92,7 +86,17 @@ WSGI_APPLICATION = 'topical.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = { 'default': env.db() }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env('DB_NAME'),
+        'USER': env('DB_USER'),
+        'PASSWORD': env('DB_PASSWORD'),
+        'HOST': 'localhost',
+        'PORT': '',
+        'OPTIONS': { 'sslmode': None }
+    }
+}
 
 
 # Password validation
@@ -146,6 +150,15 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
+
+#CORS settings
+if DEBUG:
+    CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://topical.netlify.app'
+]
+
 
 # Heroku settings
 import django_heroku

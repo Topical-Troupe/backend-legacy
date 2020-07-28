@@ -5,7 +5,7 @@ from rest_framework import routers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Lower
-from .models import Ingredient, Product, User
+from .models import Ingredient, Product, Tag, User
 from .serializers import IngredientSerializer, ProductSerializer, UserSerializer
 from .views import setup_user
 
@@ -49,62 +49,53 @@ class ProductViewSet(viewsets.ModelViewSet):
 				'violations': [],
 				'ingredient_list': []
 			}
-			"""
-			Set user restrictions: can be removed in production as it is redundant with views.py/search_products
-			"""
+			excluded_ingredients = None
 			if request.user.is_authenticated:
 				setup_user(request)
-
+				excluded_ingredients = request.user.excluded_ingredients.all()
 			else:
 				excluded_ingredients = User.get_default_exclusions()
-			"""
-			Set all excluded fuzzy names to lower case and create a list for comparison
-			"""
-			fuzzy_names = []
-			for ingredient in excluded_ingredients.all():
-				names = ingredient.names.all()
-				lc_names = names.annotate(name_lower=Lower('name'))
-				for name in lc_names:
-					fuzzy_names.append(name.name_lower)
-			"""
-			Set all product ingredient names to lower case and create a list for comparison
-			"""
-			lower_ingredients = []
-			ingredients = product.ingredients.all()
-			lc_ingredients = ingredients.annotate(name_lower=Lower('name'))
-			for ingredient in lc_ingredients:
-				lower_ingredients.append(ingredient.name_lower)
-			"""
-			Compare excluded items to product ingredients and make a list of violations
-			"""
-			for ingredient in lower_ingredients:
-				if ingredient in fuzzy_names:
-					response['violations'].append(ingredient)
-			"""
-			Create objects to be returned as full ingredient list
-			"""
-			ingredients = product.ingredients.all()
-			for ingredient in ingredients:
-				obj = {
+			for ingredient in product.ingredients.all():
+				ing_obj = {
 					'name': ingredient.name,
 					'slug': ingredient.slug,
-					'description': ingredient.description
+					'description': ingredient.description,
+					'names': []
 				}
-				response['ingredient_list'].append(obj)			
-			return JsonResponse(response)
+				for name in ingredient.names.all():
+					ing_obj['names'].append(name.name)
+				if ingredient in excluded_ingredients:
+					response['violations'].append(ingredient.name)
+				response['ingredient_list'].append(ing_obj)		
+			return JsonResponse(response)	
+		if not request.user.is_staff:
+			return HttpResponse(status = 401)
+		data = json.loads(request.body)
 		if request.method == 'POST':
-			if not request.user.is_staff:
-				return HttpResponse(status = 401)
-			data = json.loads(request.body)
 			for name in data['names']:
 				product.ingredients.add(Ingredient.by_name(name))
 			return HttpResponse(status = 200)
 		if request.method == 'DELETE':
-			if not request.user.is_staff:
-				return HttpResponse(status = 401)
-			data = json.loads(request.body)
 			for name in data['names']:
 				product.ingredients.remove(Ingredient.by_name(name))
+			return HttpResponse(status = 200)
+	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
+	def tags(self, request, upc):
+		product = get_object_or_404(Product, upc = upc)
+		if request.method == 'GET':
+			response = []
+			for tag in product.tags:
+				response.append(tag.name)
+			return JsonResponse(response)
+		data = json.loads(request.body)
+		tag = Tag.by_name(data['tags'])
+		if request.method == 'POST':
+			if tag not in product.tags.all():
+				product.tags.add(tag)
+			return HttpResponse(status = 200)
+		if request.method == 'DELETE':
+			if tag in product.tags.all():
+				product.tags.remove(tag)
 			return HttpResponse(status = 200)
 router.register('product', ProductViewSet)
 

@@ -1,8 +1,8 @@
-from django.http import HttpResponse
+from django.db.models import Q
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, get_object_or_404
-from .models import IngredientName, Product, Ingredient, User
-from django.http import JsonResponse
 
+from .models import IngredientName, Product, Ingredient, Tag, User
 from .foreign import get_product_or_create
 
 def setup_user(request):
@@ -15,11 +15,6 @@ def setup_user(request):
         user.save()
     return HttpResponse(status = 200)
 
-# Create your views here.
-"""
-First, I'm going to write this assuming that I am getting a UPC in the query.  
-Will need a try/except for products that aren't in the db yet
-"""
 def search_products(request):
     name_q = request.GET.get('name')
     upc_q = request.GET.get('upc')
@@ -35,8 +30,14 @@ def search_products(request):
     else:
         excluded_ingredients = User.get_default_exclusions()
     if name_q is not None:
-        products = Product.objects.filter(name__icontains = name_q)
-        response['count'] = len(products)
+        tags = Tag.objects.filter(name__in = name_q.split())
+        products = Product.objects.filter(
+            Q(tags__in = tags) |
+            Q(name__search = name_q) |
+            Q(description__search = name_q) |
+            Q(ingredients__names__name__search = name_q)
+        )
+        response['count'] = len(products.all())
         for product in products.all():
             obj = {
                 'upc': product.upc,

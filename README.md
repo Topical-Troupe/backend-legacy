@@ -29,16 +29,24 @@ Topical is an API
 ##### GET response
 
 ```json
-[
-  {Ingredient},
-  ...
-]
+{
+    "violations": [string],
+    "ingredient_list": [Ingredient]
+}
 ```
 
-##### POST/DELETE body
+##### POST/DELETE request body
 
 ```json
 { "names": [string] }
+```
+
+`api/product/<upc>/tags` – View or change the tags on a product. These tags are managed on the backend, so there is null-handling already in place.
+
+##### POST/DELETE request body
+
+```json
+{ "tags": [string] }
 ```
 
 ### User
@@ -92,9 +100,9 @@ Topical is an API
 
 ```json
 {
-  "name": string,
-  "brand": string,
-  "ingredients": [Ingredient]
+    "name": string,
+    "upc": string,
+    "description": string
 }
 ```
 
