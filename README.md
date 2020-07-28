@@ -41,6 +41,14 @@ Topical is an API
 { "names": [string] }
 ```
 
+`api/product/<upc>/tags` – View or change the tags on a product. These tags are managed on the backend, so there is null-handling already in place.
+
+##### POST/DELETE request body
+
+```json
+{ "tags": [string] }
+```
+
 ### User
 
 `api/me/` – gets the profile of the current user

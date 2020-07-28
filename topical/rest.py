@@ -5,7 +5,7 @@ from rest_framework import routers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Lower
-from .models import Ingredient, Product, User
+from .models import Ingredient, Product, Tag, User
 from .serializers import IngredientSerializer, ProductSerializer, UserSerializer
 from .views import setup_user
 
@@ -67,20 +67,35 @@ class ProductViewSet(viewsets.ModelViewSet):
 				if ingredient in excluded_ingredients:
 					response['violations'].append(ingredient.name)
 				response['ingredient_list'].append(ing_obj)		
-			return JsonResponse(response)
+			return JsonResponse(response)	
+		if not request.user.is_staff:
+			return HttpResponse(status = 401)
+		data = json.loads(request.body)
 		if request.method == 'POST':
-			if not request.user.is_staff:
-				return HttpResponse(status = 401)
-			data = json.loads(request.body)
 			for name in data['names']:
 				product.ingredients.add(Ingredient.by_name(name))
 			return HttpResponse(status = 200)
 		if request.method == 'DELETE':
-			if not request.user.is_staff:
-				return HttpResponse(status = 401)
-			data = json.loads(request.body)
 			for name in data['names']:
 				product.ingredients.remove(Ingredient.by_name(name))
+			return HttpResponse(status = 200)
+	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
+	def tags(self, request, upc):
+		product = get_object_or_404(Product, upc = upc)
+		if request.method == 'GET':
+			response = []
+			for tag in product.tags:
+				response.append(tag.name)
+			return JsonResponse(response)
+		data = json.loads(request.body)
+		tag = Tag.by_name(data['tags'])
+		if request.method == 'POST':
+			if tag not in product.tags.all():
+				product.tags.add(tag)
+			return HttpResponse(status = 200)
+		if request.method == 'DELETE':
+			if tag in product.tags.all():
+				product.tags.remove(tag)
 			return HttpResponse(status = 200)
 router.register('product', ProductViewSet)
 
