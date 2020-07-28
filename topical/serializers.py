@@ -47,6 +47,26 @@ class IngredientNameSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ['name', 'ingredient']
 
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
+	ingredients = IngredientSerializer(many=True, required=False)
+
+	def create(self, validated_data):
+		ingredients_data = validated_data.pop('ingredients', [])
+		#print("popped")
+		#print(ingredients_data)
+		product = Product.objects.create(**validated_data)
+		for ingredient_data in ingredients_data:
+			if len(IngredientName.objects.filter(name__iexact = ingredient_data.get('name'))):
+				print("duplicate")
+				continue
+			ingredient_name = ingredient_data.get('name')
+			#print("ingredient name")
+			#print(ingredient_name)
+			new_ingredient = Ingredient.objects.create(name=ingredient_name)
+			#print("ingredient object")
+			#print(new_ingredient)
+			product.ingredients.add(new_ingredient)
+		return product
+
 	class Meta:
 		model = Product
-		fields = ['name', 'upc', 'image_url', 'description'] 
+		fields = ['name', 'upc', 'image_url', 'description', 'ingredients'] 
