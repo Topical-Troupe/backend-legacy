@@ -85,18 +85,22 @@ WSGI_APPLICATION = 'topical.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+DATABASES = None
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': env('DB_NAME'),
-        'USER': env('DB_USER'),
-        'PASSWORD': env('DB_PASSWORD'),
-        'HOST': 'localhost',
-        'PORT': '',
-        'OPTIONS': { 'sslmode': None }
+if env('LOCAL'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': env('DB_NAME'),
+            'USER': env('DB_USER'),
+            'PASSWORD': env('DB_PASSWORD'),
+            'HOST': 'localhost',
+            'PORT': '',
+            'OPTIONS': { 'sslmode': None }
+        }
     }
-}
+else:
+    DATABASES = { 'default': env.db() }
 
 
 # Password validation
