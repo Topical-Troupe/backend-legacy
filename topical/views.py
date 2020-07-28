@@ -38,7 +38,11 @@ def search_products(request):
             Q(ingredients__names__name__search = name_q)
         )
         response['count'] = len(products.all())
+        upcs = []
         for product in products.all():
+            if product.upc in upcs:
+                continue
+            upcs.append(product.upc)
             obj = {
                 'upc': product.upc,
                 'name': product.name,
