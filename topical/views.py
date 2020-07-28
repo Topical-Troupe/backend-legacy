@@ -39,11 +39,7 @@ def search_products(request):
                 'description',
                 'ingredients__names__name'
         )).filter(search = name_q)
-        upcs = []
         for product in products.iterator():
-            if product.upc in upcs:
-                continue
-            upcs.append(product.upc)
             response['count'] += 1
             obj = {
                 'upc': product.upc,
