@@ -79,5 +79,5 @@ class IngredientTagEntry(models.Model):
 	total = models.IntegerField()
 	matches = models.IntegerField()
 	def refresh(self):
-		delta = datetime.now.date() - self.refreshed
+		delta = datetime.now() - self.refreshed
 		print(delta.days)
