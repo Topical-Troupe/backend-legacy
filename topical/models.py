@@ -19,6 +19,8 @@ class Product(models.Model):
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, null = True)
 	upc = models.CharField(max_length = 14, null = True, unique = True)
 	image_url = models.CharField(max_length = MAX_DESCRIPTION_LEN, null =  True)
+	def __str__(self):
+		return f'{self.upc} | {self.name}'
 
 class Ingredient(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
@@ -83,7 +85,7 @@ class IngredientTagEntry(models.Model):
 		super(IngredientTagEntry, self).save(*args, **kwargs)
 	def refresh(self):
 		now = datetime.now()
-		if self.total is not None or self.total != -1:
+		if self.refreshed is not None or self.total is not None or self.total != -1:
 			delta = now - self.refreshed
 			if delta.days < 3:
 				return
