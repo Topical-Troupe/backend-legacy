@@ -76,7 +76,7 @@ class IngredientTagDict(models.Model):
 
 class IngredientTagEntry(models.Model):
 	upper = models.ForeignKey(to = IngredientTagDict, on_delete = models.CASCADE)
-	refreshed = models.DateTimeField(default = None)
+	refreshed = models.DateTimeField(auto_now_add = True)
 	tag = models.ForeignKey(to = Tag, on_delete = models.CASCADE)
 	total = models.IntegerField(default = -1)
 	matches = models.IntegerField(default = -1)
@@ -85,11 +85,15 @@ class IngredientTagEntry(models.Model):
 		super(IngredientTagEntry, self).save(*args, **kwargs)
 	def refresh(self):
 		now = datetime.now()
-		if self.refreshed is not None or self.total is not None or self.total != -1:
+		if self.total == -1:
+			print('first time!')
+		else:
+			print(self.refreshed, self.total)
 			delta = now - self.refreshed
 			if delta.days < 3:
 				return
 		self.refreshed = now
-		all = self.upper.ingredient.objects.filter(tag = self.tag)
+		all = self.tag.products.all()
+		matches = self.upper.ingredient.in_products.filter(tags = self.tag)
 		self.total = len(all)
-		self.matches = len(all.filter(ingredients__in = self.upper.ingredient))
+		self.matches = len(matches)
