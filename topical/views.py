@@ -89,11 +89,11 @@ def tag_data(request, fuzzy_name, tag_name):
         return HttpResponse(status = 405)
     ingredient = Ingredient.by_name(fuzzy_name)
     tag = Tag.by_name(tag_name)
-    ite = ingredient.tag_stats.for_tag.objects.filter(tag = tag)
+    ite = ingredient.tag_stats.for_tag.get(tag = tag)
     percent = ite.matches / ite.total
     return JsonResponse({
         'total': ite.total,
         'matches': ite.matches,
         'percent': percent,
-        'common': (percent > 0.5)
+        'common': (percent > 0.6)
     })
