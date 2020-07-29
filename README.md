@@ -22,7 +22,7 @@ Topical is an API
 { "excluded": boolean }
 ```
 
-`api/ingredient/<slug>/tag/<tag_name>/` – Gets stats on how common an ingredient is for a certain tag.
+`api/ingredient/<slug>/tag/<tag_name>/` – Gets stats on how common an ingredient is for a certain tag. An important note is that tag data is only refreshed every 3 days after the last update so it won't cost as much time for repeated checks.
 
 ##### GET response
 
