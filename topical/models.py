@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
@@ -18,6 +19,8 @@ class Product(models.Model):
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, null = True)
 	upc = models.CharField(max_length = 14, null = True, unique = True)
 	image_url = models.CharField(max_length = MAX_DESCRIPTION_LEN, null =  True)
+	def __str__(self):
+		return f'{self.upc} | {self.name}'
 
 class Ingredient(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
@@ -67,3 +70,38 @@ class Tag(models.Model):
 			return tag
 		else:
 			return Tag.objects.get(name = name.lower())
+
+class IngredientTagDict(models.Model):
+	ingredient = models.OneToOneField(to = Ingredient, on_delete = models.CASCADE, related_name = 'tag_stats')
+
+class IngredientTagEntry(models.Model):
+	upper = models.ForeignKey(to = IngredientTagDict, on_delete = models.CASCADE, related_name = 'for_tag')
+	refreshed = models.DateTimeField(auto_now_add = True)
+	tag = models.ForeignKey(to = Tag, on_delete = models.CASCADE)
+	total = models.IntegerField(default = -1)
+	matches = models.IntegerField(default = -1)
+	def save(self, *args, **kwargs):
+		self.refresh()
+		super(IngredientTagEntry, self).save(*args, **kwargs)
+	def refresh(self):
+		now = datetime.now()
+		if self.total == -1:
+			# I'll be honest here. This should just be a simple
+			# if self.total != -1:... except, for reasons beyond
+			# my understanding, that is never false. I couldn't
+			# tell you what goblin is living in my machine that
+			# made that decision, but yes, in fact, for some reason
+			# self.total == -1 and self.total != -1 are literally
+			# both true when self.total = -1 for no good reason.
+			# It makes me very sad on the inside. Fortunately, 
+			# self.total == -1 is false when self.total is not -1.
+			pass
+		else:
+			delta = now.date() - self.refreshed.date()
+			if delta.days < 3:
+				return
+		self.refreshed = now
+		all = self.tag.products.all()
+		matches = self.upper.ingredient.in_products.filter(tags = self.tag)
+		self.total = len(all)
+		self.matches = len(matches)
