@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
@@ -77,3 +78,6 @@ class IngredientTagEntry(models.Model):
 	tag = models.ForeignKey(to = Tag, on_delete = models.CASCADE)
 	total = models.IntegerField()
 	matches = models.IntegerField()
+	def refresh(self):
+		delta = datetime.now.date() - self.refreshed
+		print(delta.days)
