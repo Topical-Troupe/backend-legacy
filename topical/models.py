@@ -72,10 +72,10 @@ class Tag(models.Model):
 			return Tag.objects.get(name = name.lower())
 
 class IngredientTagDict(models.Model):
-	ingredient = models.OneToOneField(to = Ingredient, on_delete = models.CASCADE, related_name = "tag_stats")
+	ingredient = models.OneToOneField(to = Ingredient, on_delete = models.CASCADE, related_name = 'tag_stats')
 
 class IngredientTagEntry(models.Model):
-	upper = models.ForeignKey(to = IngredientTagDict, on_delete = models.CASCADE)
+	upper = models.ForeignKey(to = IngredientTagDict, on_delete = models.CASCADE, related_name = 'for_tag')
 	refreshed = models.DateTimeField(auto_now_add = True)
 	tag = models.ForeignKey(to = Tag, on_delete = models.CASCADE)
 	total = models.IntegerField(default = -1)
