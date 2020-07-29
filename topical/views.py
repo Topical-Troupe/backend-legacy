@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 
-from .models import IngredientName, Product, Ingredient, Tag, User
+from .models import IngredientName, Product, Ingredient, IngredientTagEntry, Tag, User
 from .foreign import get_product_or_create
 
 def setup_user(request):
@@ -89,7 +89,16 @@ def tag_data(request, fuzzy_name, tag_name):
         return HttpResponse(status = 405)
     ingredient = Ingredient.by_name(fuzzy_name)
     tag = Tag.by_name(tag_name)
-    ite = ingredient.tag_stats.for_tag.get(tag = tag)
+    ite = ingredient.tag_stats.for_tag.filter(tag = tag)
+    if len(ite) == 0:
+        ite = IngredientTagEntry()
+        ite.ingredient = ingredient
+        ite.tag = tag
+        ite.upper = ingredient.tag_stats
+        ite.save()
+    else:
+        ite = ite[0]
+    ite.refresh()
     percent = 0
     if ite.total != 0:
         percent = ite.matches / ite.total
