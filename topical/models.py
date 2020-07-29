@@ -69,7 +69,7 @@ class Tag(models.Model):
 			return Tag.objects.get(name = name.lower())
 
 class IngredientTagDict(models.Model):
-	ingredient = models.ForeignKey(to = Ingredient, unique = True)
+	ingredient = models.ForeignKey(to = Ingredient, unique = True, related_name = "tag_stats")
 
 class IngredientTagEntry(models.Model):
 	upper = models.ForeignKey(to = IngredientTagDict)
