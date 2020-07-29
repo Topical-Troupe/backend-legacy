@@ -67,3 +67,13 @@ class Tag(models.Model):
 			return tag
 		else:
 			return Tag.objects.get(name = name.lower())
+
+class IngredientTagDict(models.Model):
+	ingredient = models.ForeignKey(to = Ingredient, unique = True)
+
+class IngredientTagEntry(models.Model):
+	upper = models.ForeignKey(to = IngredientTagDict)
+	refreshed = models.DateTimeField(auto_now = True)
+	tag = models.ForeignKey(to = Tag, on_delete = models.CASCADE)
+	total = models.IntegerField()
+	matches = models.IntegerField()
