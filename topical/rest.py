@@ -145,4 +145,4 @@ class ProfileViewSet(viewsets.ModelViewSet):
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
 	def subscribe(self, request, uuid):
 		if not request.user.is_authenticated:
-			return new HttpResponse(status = 403)
+			return HttpResponse(status = 403)

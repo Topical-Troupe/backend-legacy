@@ -119,6 +119,19 @@ Topical is an API
 }
 ```
 
+### Exclusion Profile
+
+```json
+{
+    'url': string,
+    'name': string,
+    'description': string,
+    'author': User
+}
+```
+
+
+
 ## Other JSON Responses
 
 ### Search
