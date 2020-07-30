@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "topical-api"
-version = "0.0.3"
+version = "0.0.4"
 description = "todo"
 authors = ["Britton W. <britton.wolfe1999@gmail.com>", "Steve C. <scarter13@gmail.com>"]
 

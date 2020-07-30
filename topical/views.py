@@ -1,8 +1,9 @@
+from django.contrib.postgres.search import SearchVector
 from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 
-from .models import IngredientName, Product, Ingredient, Tag, User
+from .models import IngredientName, Product, Ingredient, IngredientTagEntry, Tag, User
 from .foreign import get_product_or_create
 
 def setup_user(request):
@@ -30,21 +31,18 @@ def search_products(request):
     else:
         excluded_ingredients = User.get_default_exclusions()
     if name_q is not None:
-        tags = Tag.objects.filter(name__in = name_q.split())
-        products = Product.objects.filter(
-            Q(tags__in = tags) |
-            Q(name__search = name_q) |
-            Q(description__search = name_q) |
-            Q(ingredients__names__name__search = name_q)
-        )
-        response['count'] = len(products.all())
-        upcs = []
-        for product in products.all():
-            if product.upc in upcs:
-                continue
-            upcs.append(product.upc)
+        products = Product.objects.annotate(
+            search = SearchVector(
+                'tags__name',
+                'name',
+                'description',
+                'ingredients__names__name'
+        )).filter(search = name_q)
+        for product in products.iterator():
+            response['count'] += 1
             obj = {
                 'upc': product.upc,
+                'image_url': product.image_url,
                 'name': product.name,
                 'violations': []
             }
@@ -86,3 +84,28 @@ def product_404(request, upc):
         })
     else:
         return HttpResponse(status = 405)
+
+def tag_data(request, fuzzy_name, tag_name):
+    if request.method != 'GET':
+        return HttpResponse(status = 405)
+    ingredient = Ingredient.by_name(fuzzy_name)
+    tag = Tag.by_name(tag_name)
+    ite = ingredient.tag_stats.for_tag.filter(tag = tag)
+    if len(ite) == 0:
+        ite = IngredientTagEntry()
+        ite.ingredient = ingredient
+        ite.tag = tag
+        ite.upper = ingredient.tag_stats
+        ite.save()
+    else:
+        ite = ite[0]
+    ite.refresh()
+    percent = 0
+    if ite.total != 0:
+        percent = ite.matches / ite.total
+    return JsonResponse({
+        'total': ite.total,
+        'matches': ite.matches,
+        'percent': percent,
+        'common': (percent > 0.6)
+    })

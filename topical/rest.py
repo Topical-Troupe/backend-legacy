@@ -26,6 +26,8 @@ class IngredientViewSet(viewsets.ModelViewSet):
 		if request.method == 'GET':
 			is_excluded = ingredient in request.user.excluded_ingredients.all()
 			return JsonResponse({ 'excluded': is_excluded })
+		if not request.User.is_authenticated:
+			return HttpResponse(status = 401)
 		if request.method == 'POST':
 			if ingredient not in exclusions.all():
 				exclusions.add(ingredient)
