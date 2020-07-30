@@ -43,6 +43,7 @@ def search_products(request):
             response['count'] += 1
             obj = {
                 'upc': product.upc,
+                'image_url': product.image_url,
                 'name': product.name,
                 'violations': []
             }
