@@ -141,7 +141,6 @@ router.register('user', UserViewSet)
 class ProfileViewSet(viewsets.ModelViewSet):
 	queryset = ExclusionProfile.objects.all()
 	serializer_class = ProfileSerializer
-	lookup_field = 'uuid'
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
 	def subscribe(self, request, uuid):
 		if not request.user.is_authenticated:
