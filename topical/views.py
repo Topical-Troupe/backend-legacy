@@ -3,15 +3,16 @@ from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 
-from .models import IngredientName, Product, Ingredient, IngredientTagEntry, Tag, User
+from .models import ExclusionProfile, IngredientName, Product, Ingredient, IngredientTagEntry, Tag, User
 from .foreign import get_product_or_create
 
 def setup_user(request):
     user = User.objects.get(username = request.user.username)
     if not user.is_setup:
         print('setting up user')
-        for ingredient in User.get_default_exclusions():
-            user.excluded_ingredients.add(ingredient)
+        profile = ExclusionProfile()
+        profile.setup_defaults(request)
+        profile.save()
         user.is_setup = True
         user.save()
     return HttpResponse(status = 200)

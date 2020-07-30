@@ -16,9 +16,6 @@ class User(AbstractUser):
 			for ingredient in profile.excluded_ingredients.iterator():
 				output.append(ingredient)
 		return output
-	def get_default_exclusions():
-		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
-		return Ingredient.objects.filter(names__in = common_names).all()
 
 class Product(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
@@ -71,6 +68,14 @@ class ExclusionProfile(models.Model):
 	subscribers = models.ManyToManyField(to = get_user_model(), symmetrical = True, related_name = 'all_profiles')
 	enabled = models.ManyToManyField(to = get_user_model(), symmetrical = True, blank = True, related_name = 'profiles')
 	excluded_ingredients = models.ManyToManyField(to = Ingredient, symmetrical = True, blank = True, related_name = 'excluded_by')
+	def setup_defaults(self, request):
+		self.name = 'default'
+		self.description = "Topical's default exclusion list based on the Mayoclinic's list of common irritants."
+		self.author = request.user
+		self.subscribers.add(request.user)
+		self.enabled.add(request.user)
+		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
+		self.excluded_ingredients.add(Ingredient.objects.filter(names__in = common_names).all())
 
 class Tag(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)
