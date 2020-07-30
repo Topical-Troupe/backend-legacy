@@ -38,7 +38,7 @@ def search_products(request):
                 'tags__name',
                 'name',
                 'description',
-                'ingredients__names__name'
+                'ingredients__names__name',
         )).filter(search = name_q)
         upcs = []
         for product in products.iterator():
@@ -66,9 +66,9 @@ def search_products(request):
     if profile_q is not None:
         profiles = ExclusionProfile.objects.annotate(
             search = SearchVector(
-                'name__search',
-                'description__search',
-                'author__name__icontains'
+                'name',
+                'description',
+                'author__username'
         )).filter(name__search = profile_q)
         uuids = []
         for profile in profiles.iterator():
