@@ -141,8 +141,31 @@ router.register('user', UserViewSet)
 class ProfileViewSet(viewsets.ModelViewSet):
 	queryset = ExclusionProfile.objects.all()
 	serializer_class = ProfileSerializer
+	lookup_field = 'uuid'
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
 	def subscribe(self, request, uuid):
 		if not request.user.is_authenticated:
 			return HttpResponse(status = 403)
+		profile = get_object_or_404(ExclusionProfile, uuid = uuid)
+		if request.method == 'GET':
+			response = {
+				'subscribed': profile in request.user.all_profiles,
+			}
+			if response['subscribed']:
+				response['enabled'] = profile in request.user.profiles
+			return JsonResponse(response)
+		if request.method == 'POST':
+			if not profile in request.user.all_profiles:
+				request.user.profiles.add(profile)
+				request.user.all_profiles.add(profile)
+			return HttpResponse(status = 200)
+		if request.method == 'DELETE':
+			if profile in request.user.own_profiles:
+				return HttpResponse(status = 409)
+			if profile in request.user.all_profiles:
+				request.user.all_profiles.remove(profile)
+				if profile in request.user.profiles:
+					request.user.profiles.remove(profile)
+			return HttpResponse(status = 200)
+		return HttpResponse(status = 405)
 router.register('profiles', ProfileViewSet)
