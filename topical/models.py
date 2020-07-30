@@ -27,7 +27,6 @@ class Ingredient(models.Model):
 	slug = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, blank = True)
 	in_products = models.ManyToManyField(to = Product, symmetrical = True, related_name = 'ingredients')
-	excluded_by = models.ManyToManyField(to = get_user_model(), symmetrical = True, related_name = 'excluded_ingredients', blank = True)
 	def save(self, *args, **kwargs):
 		self.slug = self.generate_slug()
 		basename = self.ensure_basename()
@@ -58,6 +57,14 @@ class IngredientName(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	def __str__(self):
 		return self.name
+
+class ExclusionProfile(models.Model):
+	name = models.CharField(max_length = MAX_NAME_LEN)
+	description = models.CharField(max_length = MAX_DESCRIPTION_LEN, blank = True)
+	author = models.ForeignKey(to = get_user_model(), related_name = 'own_profiles')
+	subscribers = models.ManyToManyField(to = get_user_model(), symmetrical = True, related_name = 'all_profiles')
+	enabled = models.ManyToManyField(to = get_user_model(), symmetrical = True, related_name = 'profiles', blank = True)
+	excluded_ingredients = models.ManyToManyField(to = Ingredient, symmetrical = True, related_name = 'excluded_by', blank = True)
 
 class Tag(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)
