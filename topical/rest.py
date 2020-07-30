@@ -168,4 +168,21 @@ class ProfileViewSet(viewsets.ModelViewSet):
 					request.user.profiles.remove(profile)
 			return HttpResponse(status = 200)
 		return HttpResponse(status = 405)
+	def enabled(self, request, uuid):
+		if not request.user.is_authenticated:
+			return HttpResponse(status = 403)
+		profile = get_object_or_404(ExclusionProfile, uuid = uuid)
+		if request.method == 'GET':
+			return self.subscribe(request, uuid)
+		if request.method == 'POST':
+			if profile not in request.user.profiles:
+				request.user.profiles.add(profile)
+			if profile not in request.user.all_profiles:
+				request.user.all_profiles.add(profile)
+			return HttpResponse(status = 200)
+		if request.method == 'DELETE':
+			if profile in request.user.profiles:
+				request.user.profiles.remove(profile)
+			return HttpResponse(status = 200)
+		return HttpResponse(status = 405)
 router.register('profiles', ProfileViewSet)
