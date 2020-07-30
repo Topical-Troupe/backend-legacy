@@ -112,16 +112,17 @@ Topical is an API
 
 ```json
 {
-  "count": int,
-  "results": [
-    {
-      "upc": str,
-      "name": str,
-      "violations": [
-        {Ingredient}, ...
-      ]
-    }, ...
-  ]
+	"count": int,
+	"results": [
+        {
+			"upc": str,
+			"image_url": string,
+            "name": string,
+        	"violations": [
+            	{Ingredient}, ...
+        	]
+     	}, ...
+	]
 }
 ```
 
