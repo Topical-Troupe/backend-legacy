@@ -75,6 +75,15 @@ def search_products(request):
             if profile.uuid in uuids:
                 continue
             uuids.append(profile.uuid)
+            response['count'] += 1
+            obj = {
+                'name': profile.name,
+                'author': profile.author.username,
+                'description': profile.description,
+                'uuid': profile.uuid,
+                'exclusion_count': len(profile.excluded_ingredients)
+            }
+            response['results'].append(obj)
     if upc_q is not None:
         product = get_product_or_create(upc_q)
         if type(product) is HttpResponse:
