@@ -44,14 +44,21 @@ class IngredientViewSet(viewsets.ModelViewSet):
 		print(user.username)
 		for ingredient in request.data['ingredients']:
 			if len(Ingredient.objects.filter(name__iexact = ingredient)) > 0:
+				#if this ingredient already exists as an object
 				ingredient_to_add = Ingredient.objects.get(name__iexact = ingredient)
 				print(ingredient_to_add)
 				user.excluded_ingredients.add(ingredient_to_add)
 				print("existing ingredient added")
 			elif len(IngredientName.objects.filter(name__iexact = ingredient)) > 0:
-				ingredient_to_add = Ingredient.objects.filter(names)
-
+				#if this ingredient is a fuzzy name for and existing ingredient object
+				print("Found a fuzzy name!")
+				print(len(IngredientName.objects.filter(name__iexact = ingredient)))
+				ingredient_to_add = Ingredient.objects.get(names__name__iexact = ingredient) 
+				print(ingredient_to_add)
+				user.excluded_ingredients.add(ingredient_to_add)
+				print(user.excluded_ingredients.all())
 			else:
+				#if this ingredient does not exist already
 				new_ingredient = Ingredient.objects.create(name = ingredient)
 				print("new ingredient found!")
 				print(new_ingredient)
