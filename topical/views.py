@@ -27,7 +27,7 @@ def search_products(request):
     }
     if request.user.is_authenticated:
         setup_user(request)
-        excluded_ingredients = request.user.excluded_ingredients
+        excluded_ingredients = request.user.get_excluded()
     else:
         excluded_ingredients = User.get_default_exclusions()
     if name_q is not None:
@@ -50,9 +50,8 @@ def search_products(request):
                 'name': product.name,
                 'violations': []
             }
-            excluded = request.user.get_excluded()
             for ingredient in product.ingredients.iterator():
-                if ingredient in excluded:
+                if ingredient in excluded_ingredients:
                     violation_data = {
                         'slug': ingredient.slug,
                         'description': ingredient.description,
