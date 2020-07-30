@@ -86,6 +86,21 @@ Topical is an API
 }
 ```
 
+### Exclusion Profile
+
+`api/profiles/<uuid>/subscribe` – view or change whether or not the user is subscribed to a profile. Supports `GET`, `POST`, and `DELETE` methods. If the user tries to unsubscribe from a profile they own, this will return a `409 - Conflict` (instead of unsubscribing, they should be disabling or deleting their own profiles).
+
+##### GET response
+
+```json
+{
+    "subscribed": boolean,
+    "enabled": boolean
+}
+```
+
+**NOTE**: `"enabled"` is only present if `"subscribed"` is `true`.
+
 ## Models
 
 ### User
