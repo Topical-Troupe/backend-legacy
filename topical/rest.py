@@ -146,3 +146,4 @@ class ProfileViewSet(viewsets.ModelViewSet):
 	def subscribe(self, request, uuid):
 		if not request.user.is_authenticated:
 			return HttpResponse(status = 403)
+router.register('profiles', ProfileViewSet)

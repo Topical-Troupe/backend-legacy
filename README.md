@@ -130,8 +130,6 @@ Topical is an API
 }
 ```
 
-
-
 ## Other JSON Responses
 
 ### Search

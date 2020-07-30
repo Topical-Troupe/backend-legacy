@@ -19,6 +19,7 @@ def setup_user(request):
 
 def search_products(request):
     name_q = request.GET.get('name')
+    profile_q = request.GET.get('profile')
     upc_q = request.GET.get('upc')
     print(upc_q)
     excluded_ingredients = None
@@ -62,6 +63,18 @@ def search_products(request):
                         violation_data['names'].append(name.name)
                     obj['violations'].append(violation_data)
             response['results'].append(obj)
+    if profile_q is not None:
+        profiles = ExclusionProfile.objects.annotate(
+            search = SearchVector(
+                'name__search',
+                'description__search',
+                'author__name__icontains'
+        )).filter(name__search = profile_q)
+        uuids = []
+        for profile in profiles.iterator():
+            if profile.uuid in uuids:
+                continue
+            uuids.append(profile.uuid)
     if upc_q is not None:
         product = get_product_or_create(upc_q)
         if type(product) is HttpResponse:
