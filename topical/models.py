@@ -61,10 +61,10 @@ class IngredientName(models.Model):
 class ExclusionProfile(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
 	description = models.CharField(max_length = MAX_DESCRIPTION_LEN, blank = True)
-	author = models.ForeignKey(to = get_user_model(), related_name = 'own_profiles')
+	author = models.ForeignKey(to = get_user_model(), on_delete = models.CASCADE, related_name = 'own_profiles')
 	subscribers = models.ManyToManyField(to = get_user_model(), symmetrical = True, related_name = 'all_profiles')
-	enabled = models.ManyToManyField(to = get_user_model(), symmetrical = True, related_name = 'profiles', blank = True)
-	excluded_ingredients = models.ManyToManyField(to = Ingredient, symmetrical = True, related_name = 'excluded_by', blank = True)
+	enabled = models.ManyToManyField(to = get_user_model(), symmetrical = True, blank = True, related_name = 'profiles')
+	excluded_ingredients = models.ManyToManyField(to = Ingredient, symmetrical = True, blank = True, related_name = 'excluded_by')
 
 class Tag(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)

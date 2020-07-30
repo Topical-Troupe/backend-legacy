@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Ingredient, IngredientName, Product, User
+from .models import ExclusionProfile, Ingredient, IngredientName, Product, User
 
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -50,3 +50,8 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Product
 		fields = ['name', 'upc', 'image_url', 'description'] 
+
+class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+	class Meta:
+		model = ExclusionProfile
+		fields = ['name', 'description', 'author', 'excluded_ingredients']

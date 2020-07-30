@@ -5,8 +5,8 @@ from rest_framework import routers, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Lower
-from .models import Ingredient, Product, Tag, User
-from .serializers import IngredientSerializer, ProductSerializer, UserSerializer
+from .models import ExclusionProfile, Ingredient, Product, Tag, User
+from .serializers import IngredientSerializer, ProductSerializer, ProfileSerializer, UserSerializer
 from .views import setup_user
 
 router = routers.DefaultRouter()
@@ -137,3 +137,12 @@ class UserViewSet(viewsets.ModelViewSet):
 			response['items'].append(json_ing)
 		return JsonResponse(response)
 router.register('user', UserViewSet)
+
+class ProfileViewSet(viewsets.ModelViewSet):
+	queryset = ExclusionProfile.objects.all()
+	serializer_class = ProfileSerializer
+	lookup_field = 'uuid'
+	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
+	def subscribe(self, request, uuid):
+		if not request.user.is_authenticated:
+			return new HttpResponse(status = 403)
