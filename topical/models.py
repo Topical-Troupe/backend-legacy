@@ -10,6 +10,12 @@ DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", 
 
 class User(AbstractUser):
 	is_setup = models.BooleanField(default=False)
+	def get_excluded(self):
+		output = []
+		for profile in self.profiles.iterator():
+			for ingredient in profile.excluded_ingredients.iterator():
+				output.append(ingredient)
+		return output
 	def get_default_exclusions():
 		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
 		return Ingredient.objects.filter(names__in = common_names).all()

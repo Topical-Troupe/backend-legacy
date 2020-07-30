@@ -50,10 +50,9 @@ def search_products(request):
                 'name': product.name,
                 'violations': []
             }
-            ingredients = product.ingredients.all()
-            for n in range(len(ingredients)):
-                ingredient = ingredients[n]
-                if ingredient in excluded_ingredients.all():
+            excluded = request.user.get_excluded()
+            for ingredient in product.ingredients.iterator():
+                if ingredient in excluded:
                     violation_data = {
                         'slug': ingredient.slug,
                         'description': ingredient.description,
