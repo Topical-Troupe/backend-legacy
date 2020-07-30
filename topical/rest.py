@@ -168,6 +168,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 					request.user.profiles.remove(profile)
 			return HttpResponse(status = 200)
 		return HttpResponse(status = 405)
+	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
 	def enabled(self, request, uuid):
 		if not request.user.is_authenticated:
 			return HttpResponse(status = 403)
