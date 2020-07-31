@@ -158,7 +158,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
 			return HttpResponse(status = 400)
 		profile = ExclusionProfile()
 		profile.author = request.user
-		profile.subscribed.add(request.user)
+		profile.subscribers.add(request.user)
 		profile.enabled.add(request.user)
 		vdat = serializer.validated_data
 		profile.name = vdat['name']

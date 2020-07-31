@@ -71,11 +71,12 @@ class ExclusionProfile(models.Model):
 	def setup_defaults(self, request):
 		self.name = 'default'
 		self.description = "Topical's default exclusion list based on the Mayoclinic's list of common irritants."
+		print(request.user)
 		self.author = request.user
-		self.subscribers.add(request.user)
-		self.enabled.add(request.user)
+		self.save()
 		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
-		self.excluded_ingredients.add(Ingredient.objects.filter(names__in = common_names).all())
+		for ingredient in Ingredient.objects.filter(names__in = common_names).iterator():
+			self.excluded_ingredients.add(ingredient)
 
 class Tag(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)
