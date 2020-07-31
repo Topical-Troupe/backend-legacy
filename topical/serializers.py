@@ -55,3 +55,8 @@ class ProfileSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = ExclusionProfile
 		fields = ['name', 'description', 'author', 'url', 'excluded_ingredients']
+
+class ProfileInitSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = ExclusionProfile
+		fields = ['name', 'description']

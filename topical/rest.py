@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Lower
 from .models import ExclusionProfile, Ingredient, Product, Tag, User
-from .serializers import IngredientSerializer, ProductSerializer, ProfileSerializer, UserSerializer
+from .serializers import IngredientSerializer, ProductSerializer, ProfileSerializer, ProfileInitSerializer, UserSerializer
 from .views import setup_user
 
 router = routers.DefaultRouter()
@@ -142,6 +142,26 @@ class ProfileViewSet(viewsets.ModelViewSet):
 	queryset = ExclusionProfile.objects.all()
 	serializer_class = ProfileSerializer
 	lookup_field = 'uuid'
+	def create(self, request):
+		data = request.data
+		serializer = ProfileInitSerializer(data = data)
+		if not serializer.is_valid():
+			return HttpResponse(status = 400)
+		profile = ExclusionProfile()
+		profile.author = request.user
+		profile.subscribed.add(request.user)
+		profile.enabled.add(request.user)
+		vdat = serializer.validated_data
+		profile.name = vdat['name']
+		if 'description' in vdat:
+			profile.description = vdat['description']
+		jdata = json.loads(data)
+		for name in jdata['names']:
+			ingredient = Ingredient.by_name(name)
+			if ingredient is not None:
+				profile.excluded_ingredients.add(ingredient)
+		profile.save()
+		return HttpResponse(status = 200)
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
 	def subscribe(self, request, uuid):
 		if not request.user.is_authenticated:
