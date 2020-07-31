@@ -22,6 +22,15 @@ Topical is an API
 { "excluded": boolean }
 ```
 
+`api/ingredient/add/` - Adds an ingredient to the list of items excluded by the logged in user.  This endpoint will register a new ingredient in the database automatically if the ingredinet has not yet been created.  Allows `POST` method only.
+
+##### POST body
+
+```json
+{
+  "ingredients": [Ingredient]
+}
+
 #### Product
 
 `api/product/<upc>/ingredients/` – View or change the list of ingredients on a product. Allows `GET`, `POST`, and `DELETE` methods.
