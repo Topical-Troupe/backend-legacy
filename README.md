@@ -175,6 +175,8 @@ Topical is an API
 
 ### Search
 
+#### 'name' query
+
 ```json
 {
 	"count": int,
@@ -191,3 +193,19 @@ Topical is an API
 }
 ```
 
+#### 'profile' query
+
+```json
+{
+    "count": int,
+    "results": [
+        {
+            "name": string,
+            "author": string,
+            "description": string,
+            "uuid": string,
+            "exclusion_count": int
+        }, ...
+    ]
+}
+```
