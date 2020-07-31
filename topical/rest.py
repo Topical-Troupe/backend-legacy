@@ -136,6 +136,15 @@ class UserViewSet(viewsets.ModelViewSet):
 				json_ing['names'].append(name)
 			response['items'].append(json_ing)
 		return JsonResponse(response)
+	@action(detail = True, methods = ['GET'])
+	def own_profiles(self, request, username):
+		user = get_object_or_404(User, username = username)
+		serializer = ProfileSerializer(
+			user.own_profiles,
+			many = True,
+			context = { 'context': request}
+		)
+		return Response(serializer.data)
 router.register('user', UserViewSet)
 
 class ProfileViewSet(viewsets.ModelViewSet):

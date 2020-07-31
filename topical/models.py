@@ -71,6 +71,7 @@ class ExclusionProfile(models.Model):
 	def setup_defaults(self, request):
 		self.name = 'default'
 		self.description = "Topical's default exclusion list based on the Mayoclinic's list of common irritants."
+		self.save(commit = False)
 		self.author = request.user
 		self.subscribers.add(request.user)
 		self.enabled.add(request.user)

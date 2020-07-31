@@ -12,7 +12,7 @@ class RelatedNameSerializer(serializers.ModelSerializer):
 		model = IngredientName
 		fields = ['name']
 
-class IngredientSerializer(serializers.HyperlinkedModelSerializer):
+class IngredientSerializer(serializers.ModelSerializer):
 	slug = serializers.ReadOnlyField()
 	names = RelatedNameSerializer(read_only = False, many = True, required = False, default = [])
 
@@ -41,17 +41,17 @@ class IngredientSerializer(serializers.HyperlinkedModelSerializer):
 			IngredientName.objects.create(ingredient=ingredient, **name_data)
 		return ingredient
 
-class IngredientNameSerializer(serializers.HyperlinkedModelSerializer):
+class IngredientNameSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = IngredientName
 		fields = ['name', 'ingredient']
 
-class ProductSerializer(serializers.HyperlinkedModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Product
 		fields = ['name', 'upc', 'image_url', 'description'] 
 
-class ProfileSerializer(serializers.HyperlinkedModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = ExclusionProfile
 		fields = ['name', 'description', 'author', 'url', 'excluded_ingredients']
