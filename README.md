@@ -31,6 +31,19 @@ Topical is an API
   "ingredients": [Ingredient]
 }
 
+`api/ingredient/<slug>/tag/<tag_name>/` – Gets stats on how common an ingredient is for a certain tag. An important note is that tag data is only refreshed every 3 days after the last update so it won't cost as much time for repeated checks.
+
+##### GET response
+
+```json
+{
+    "total": int,
+    "matches": int,
+    "percent": float,
+    "common": boolean
+}
+```
+
 #### Product
 
 `api/product/<upc>/ingredients/` – View or change the list of ingredients on a product. Allows `GET`, `POST`, and `DELETE` methods.
@@ -121,16 +134,17 @@ Topical is an API
 
 ```json
 {
-  "count": int,
-  "results": [
-    {
-      "upc": str,
-      "name": str,
-      "violations": [
-        {Ingredient}, ...
-      ]
-    }, ...
-  ]
+	"count": int,
+	"results": [
+        {
+			"upc": str,
+			"image_url": string,
+            "name": string,
+        	"violations": [
+            	{Ingredient}, ...
+        	]
+     	}, ...
+	]
 }
 ```
 
