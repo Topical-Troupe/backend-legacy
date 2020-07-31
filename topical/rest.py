@@ -163,6 +163,43 @@ class ProfileViewSet(viewsets.ModelViewSet):
 		profile.save()
 		return HttpResponse(status = 200)
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
+	def excludes(self, request, uuid):
+		profile = get_object_or_404(ExclusionProfile, uuid = uuid)
+		if request.method == 'GET':
+			response = {
+				'count': 0,
+				'ingredients': []
+			}
+			for ingredient in profile.excluded_ingredients.iterator():
+				response['count'] += 1
+				obj = {
+					'name': ingredient.name,
+					'slug': ingredient.slug,
+					'names': []
+				}
+				for name in ingredient.names.iterator():
+					obj['names'].append(name.name)
+				response['ingredients'].append(obj)
+			return JsonResponse(response)
+		if not request.user == profile.author:
+			return HttpResponse(status = 403)
+		data = json.loads(request.data)
+		if not 'names' in data:
+			return HttpResponse(status = 400)
+		if request.method == 'POST':
+			for name in data['names']:
+				ingredient = Ingredient.by_name(name)
+				if ingredient is not None and ingredient not in profile.excluded_ingredients:
+					profile.excluded_ingredients.add(ingredient)
+			return HttpResponse(status = 200)
+		if request.method == 'DELETE':
+			for name in data['names']:
+				ingredient = Ingredient.by_name(name)
+				if ingredient is not None and ingredient in profile.excluded_ingredients:
+					profile.excluded_ingredients.remove(ingredient)
+			return HttpResponse(status = 200)
+		return HttpResponse(status = 405)
+	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
 	def subscribe(self, request, uuid):
 		if not request.user.is_authenticated:
 			return HttpResponse(status = 403)
