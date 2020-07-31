@@ -103,6 +103,29 @@ Topical is an API
 
 `api/profiles/<uuid>/enabled/` – view or change whether or not a profile is enabled. Allows `GET`, `POST`, and `DELETE` methods. Its `GET` response body is the same as `.../subscribed/`, since it literally calls it. `POST` and `DELETE` enable and disable a profile respectively.
 
+`api/profiles/<uuid>/excludes/` – view or change the ingredients excluded by this profile. Allows `GET` for all users, and allows `POST` and `DELETE` for the profile's author.
+
+##### GET response
+
+```json
+{
+    "count": int,
+    "ingredients": [
+        {
+            "name": string,
+            "slug": string,
+            "names": [string]
+        }, ...
+    ]
+}
+```
+
+##### POST/DELETE request body
+
+```json
+{ "names": [string] }
+```
+
 ## Models
 
 ### User
@@ -140,10 +163,11 @@ Topical is an API
 
 ```json
 {
-    'url': string,
-    'name': string,
-    'description': string,
-    'author': User
+    "url": string,
+    "name": string,
+    "description": string,
+    "author": User,
+    "excluded_ingredients": [Ingredient]
 }
 ```
 
