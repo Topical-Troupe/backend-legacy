@@ -1,11 +1,11 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 import json
-from rest_framework import routers, viewsets
+from rest_framework import routers, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Lower
-from .models import Ingredient, Product, Tag, User
+from .models import Ingredient, Product, Tag, User, IngredientName
 from .serializers import IngredientSerializer, ProductSerializer, UserSerializer
 from .views import setup_user
 
@@ -37,6 +37,36 @@ class IngredientViewSet(viewsets.ModelViewSet):
 				exclusions.remove(ingredient)
 			return HttpResponse(status = 200)
 		return HttpResponse(status = 405)
+
+	@action(detail = False, methods = ['POST'])
+	def add(self, request):
+		user = request.user
+		restrictions = Ingredient.objects.filter(excluded_by = user)
+		for ingredient in request.data['ingredients']:
+			if len(restrictions.filter(names__name__iexact = ingredient)) > 0:
+				#if this ingredient is already on the user restricted list
+				print ("This item is already on your exclude list")
+				continue
+			elif len(Ingredient.objects.filter(name__iexact = ingredient)) > 0:
+				#if this ingredient already exists as an object
+				ingredient_to_add = Ingredient.objects.get(name__iexact = ingredient)
+				user.excluded_ingredients.add(ingredient_to_add)
+			elif len(IngredientName.objects.filter(name__iexact = ingredient)) > 0:
+				#if this ingredient is a fuzzy name for and existing ingredient object
+				ingredient_to_add = Ingredient.objects.get(names__name__iexact = ingredient) 
+				print(ingredient_to_add)
+				user.excluded_ingredients.add(ingredient_to_add)
+				print(user.excluded_ingredients.all())
+			else:
+				#if this ingredient does not exist already
+				new_ingredient = Ingredient.objects.create(name = ingredient)
+				print("new ingredient found!")
+				print(new_ingredient)
+				print(user.excluded_ingredients.all())
+				user.excluded_ingredients.add(new_ingredient)
+				print(user.excluded_ingredients.all())
+		return Response("Ingredient added!", status=status.HTTP_204_NO_CONTENT)
+			
 router.register('ingredient', IngredientViewSet)
 
 class ProductViewSet(viewsets.ModelViewSet):

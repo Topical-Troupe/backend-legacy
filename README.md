@@ -22,6 +22,15 @@ Topical is an API
 { "excluded": boolean }
 ```
 
+`api/ingredient/add/` - Adds an ingredient to the list of items excluded by the logged in user.  This endpoint will register a new ingredient in the database automatically if the ingredinet has not yet been created.  Allows `POST` method only.
+
+##### POST body
+
+```json
+{
+  "ingredients": [Ingredient]
+}
+
 `api/ingredient/<slug>/tag/<tag_name>/` – Gets stats on how common an ingredient is for a certain tag. An important note is that tag data is only refreshed every 3 days after the last update so it won't cost as much time for repeated checks.
 
 ##### GET response
