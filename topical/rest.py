@@ -41,18 +41,18 @@ class IngredientViewSet(viewsets.ModelViewSet):
 	@action(detail = False, methods = ['POST'])
 	def add(self, request):
 		user = request.user
-		print(user.username)
+		restrictions = Ingredient.objects.filter(excluded_by = user)
 		for ingredient in request.data['ingredients']:
-			if len(Ingredient.objects.filter(name__iexact = ingredient)) > 0:
+			if len(restrictions.filter(names__name__iexact = ingredient)) > 0:
+				#if this ingredient is already on the user restricted list
+				print ("This item is already on your exclude list")
+				continue
+			elif len(Ingredient.objects.filter(name__iexact = ingredient)) > 0:
 				#if this ingredient already exists as an object
 				ingredient_to_add = Ingredient.objects.get(name__iexact = ingredient)
-				print(ingredient_to_add)
 				user.excluded_ingredients.add(ingredient_to_add)
-				print("existing ingredient added")
 			elif len(IngredientName.objects.filter(name__iexact = ingredient)) > 0:
 				#if this ingredient is a fuzzy name for and existing ingredient object
-				print("Found a fuzzy name!")
-				print(len(IngredientName.objects.filter(name__iexact = ingredient)))
 				ingredient_to_add = Ingredient.objects.get(names__name__iexact = ingredient) 
 				print(ingredient_to_add)
 				user.excluded_ingredients.add(ingredient_to_add)
