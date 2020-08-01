@@ -30,10 +30,9 @@ Topical is an API
 {
   "ingredients": [Ingredient]
 }
+```
 
 `api/ingredient/<slug>/tag/<tag_name>/` – Gets stats on how common an ingredient is for a certain tag. An important note is that tag data is only refreshed every 3 days after the last update so it won't cost as much time for repeated checks.
-
-##### GET response
 
 ```json
 {
@@ -43,6 +42,8 @@ Topical is an API
     "common": boolean
 }
 ```
+
+##### GET response
 
 #### Product
 
