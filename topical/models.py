@@ -10,7 +10,7 @@ MAX_NAME_LEN = 512
 DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrance", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
 
 class User(AbstractUser):
-	is_setup = models.BooleanField(default=False)
+	is_setup = models.BooleanField(default = False)
 	def get_excluded(self):
 		output = []
 		for profile in self.profiles.iterator():
@@ -78,8 +78,8 @@ class ExclusionProfile(models.Model):
 		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
 		for ingredient in Ingredient.objects.filter(names__in = common_names).iterator():
 			self.excluded_ingredients.add(ingredient)
-	#def __str__(self):
-	#	return f'EProfile #{self.uuid}: {self.name} by {self.author.username}'
+	def __str__(self):
+		return f'EProfile #{self.pk}: {self.name} by {self.author.username}'
 
 class Tag(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)

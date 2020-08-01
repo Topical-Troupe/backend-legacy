@@ -40,31 +40,23 @@ class IngredientViewSet(viewsets.ModelViewSet):
 
 	@action(detail = False, methods = ['POST'])
 	def add(self, request):
-		user = request.user
-		restrictions = Ingredient.objects.filter(excluded_by = user)
-		for ingredient in request.data['ingredients']:
-			if len(restrictions.filter(names__name__iexact = ingredient)) > 0:
-				#if this ingredient is already on the user restricted list
-				print ("This item is already on your exclude list")
-				continue
-			elif len(Ingredient.objects.filter(name__iexact = ingredient)) > 0:
-				#if this ingredient already exists as an object
-				ingredient_to_add = Ingredient.objects.get(name__iexact = ingredient)
-				user.excluded_ingredients.add(ingredient_to_add)
-			elif len(IngredientName.objects.filter(name__iexact = ingredient)) > 0:
-				#if this ingredient is a fuzzy name for and existing ingredient object
-				ingredient_to_add = Ingredient.objects.get(names__name__iexact = ingredient) 
-				print(ingredient_to_add)
-				user.excluded_ingredients.add(ingredient_to_add)
-				print(user.excluded_ingredients.all())
-			else:
-				#if this ingredient does not exist already
+		for name in request.data['ingredients']:
+			ingredient = Ingredient.by_name(name)
+			if ingredient is None:
 				new_ingredient = Ingredient.objects.create(name = ingredient)
 				print("new ingredient found!")
 				print(new_ingredient)
-				print(user.excluded_ingredients.all())
-				user.excluded_ingredients.add(new_ingredient)
-				print(user.excluded_ingredients.all())
+			if hasattr(request.data, 'profile_pk'):
+				profile = request.data['profile_pk']
+				if profile.author != request.user:
+					print("The user doesn't own this list.")
+					continue
+				if ingredient in profile.excluded_ingredients.all():
+					#if this ingredient is already on the user restricted list
+					print ("This item is already in this list")
+					continue
+				else:
+					profile.excluded_ingredients.add(ingredient)	
 		return Response("Ingredient added!", status=status.HTTP_204_NO_CONTENT)
 			
 router.register('ingredient', IngredientViewSet)
