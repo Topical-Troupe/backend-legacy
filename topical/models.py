@@ -77,8 +77,8 @@ class ExclusionProfile(models.Model):
 		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
 		for ingredient in Ingredient.objects.filter(names__in = common_names).iterator():
 			self.excluded_ingredients.add(ingredient)
-	def __str__(self):
-		return f'EProfile #{self.uuid}: {self.name} by {self.author.username}'
+	#def __str__(self):
+	#	return f'EProfile #{self.uuid}: {self.name} by {self.author.username}'
 
 class Tag(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)

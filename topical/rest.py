@@ -180,7 +180,6 @@ router.register('user', UserViewSet)
 class ProfileViewSet(viewsets.ModelViewSet):
 	queryset = ExclusionProfile.objects.all()
 	serializer_class = ProfileSerializer
-	lookup_field = 'uuid'
 	def create(self, request):
 		data = request.data
 		serializer = ProfileInitSerializer(data = data)
@@ -202,8 +201,8 @@ class ProfileViewSet(viewsets.ModelViewSet):
 		profile.save()
 		return HttpResponse(status = 200)
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
-	def excludes(self, request, uuid):
-		profile = get_object_or_404(ExclusionProfile, uuid = uuid)
+	def excludes(self, request, pk):
+		profile = get_object_or_404(ExclusionProfile, pk = pk)
 		if request.method == 'GET':
 			response = {
 				'count': 0,
@@ -239,46 +238,50 @@ class ProfileViewSet(viewsets.ModelViewSet):
 			return HttpResponse(status = 200)
 		return HttpResponse(status = 405)
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
-	def subscribe(self, request, uuid):
+	def subscribe(self, request, pk):
 		if not request.user.is_authenticated:
 			return HttpResponse(status = 403)
-		profile = get_object_or_404(ExclusionProfile, uuid = uuid)
+		profile = get_object_or_404(ExclusionProfile, pk = pk)
+		subscribed = len(request.user.all_profiles.filter(pk = profile.pk)) > 0
+		enabled = subscribed and len(request.user.profiles.filter(pk = profile.pk)) > 0
 		if request.method == 'GET':
 			response = {
-				'subscribed': profile in request.user.all_profiles,
+				'subscribed': subscribed,
 			}
-			if response['subscribed']:
-				response['enabled'] = profile in request.user.profiles
+			if subscribed:
+				response['enabled'] = enabled
 			return JsonResponse(response)
 		if request.method == 'POST':
-			if not profile in request.user.all_profiles:
+			if not subscribed:
 				request.user.profiles.add(profile)
 				request.user.all_profiles.add(profile)
 			return HttpResponse(status = 200)
 		if request.method == 'DELETE':
-			if profile in request.user.own_profiles:
+			if len(request.user.own_profiles.filter(pk = profile.pk)) > 0:
 				return HttpResponse(status = 409)
-			if profile in request.user.all_profiles:
+			if subscribed:
 				request.user.all_profiles.remove(profile)
-				if profile in request.user.profiles:
+				if enabled:
 					request.user.profiles.remove(profile)
 			return HttpResponse(status = 200)
 		return HttpResponse(status = 405)
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
-	def enabled(self, request, uuid):
+	def enabled(self, request, pk):
 		if not request.user.is_authenticated:
 			return HttpResponse(status = 403)
-		profile = get_object_or_404(ExclusionProfile, uuid = uuid)
+		profile = get_object_or_404(ExclusionProfile, pk = pk)
 		if request.method == 'GET':
-			return self.subscribe(request, uuid)
+			return self.subscribe(request, pk)
+		subscribed = len(request.user.all_profiles.filter(pk = profile.pk)) > 0
+		enabled = subscribed and len(request.user.profiles.filter(pk = profile.pk)) > 0
 		if request.method == 'POST':
-			if profile not in request.user.profiles:
+			if not enabled:
 				request.user.profiles.add(profile)
-			if profile not in request.user.all_profiles:
+			if not subscribed:
 				request.user.all_profiles.add(profile)
 			return HttpResponse(status = 200)
 		if request.method == 'DELETE':
-			if profile in request.user.profiles:
+			if enabled:
 				request.user.profiles.remove(profile)
 			return HttpResponse(status = 200)
 		return HttpResponse(status = 405)
