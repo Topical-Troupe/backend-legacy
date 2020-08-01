@@ -5,7 +5,7 @@ from .models import ExclusionProfile, Ingredient, IngredientName, Product, User
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
-		fields = ['username', 'first_name', 'last_name']
+		fields = ['username', 'url', 'first_name', 'last_name']
 
 class RelatedNameSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -13,13 +13,15 @@ class RelatedNameSerializer(serializers.ModelSerializer):
 		fields = ['name']
 
 class IngredientSerializer(serializers.HyperlinkedModelSerializer):
-	names = serializers.Field(source = 'names.name')
 	slug = serializers.ReadOnlyField()
 	names = RelatedNameSerializer(read_only = False, many = True, required = False, default = [])
 
 	class Meta:
 		model = Ingredient
-		fields = ['name', 'slug', 'names', 'description']
+		fields = ['name', 'url', 'slug', 'names', 'description']
+		extra_kwargs = {
+			'url': { 'lookup_field': 'slug'}
+		}
 	
 	def create(self, validated_data):
 		names_data = validated_data.pop('names',[])
@@ -50,9 +52,11 @@ class IngredientNameSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Product
-		fields = ['name', 'upc', 'image_url', 'description'] 
+		fields = ['name', 'url', 'upc', 'image_url', 'description'] 
 
 class ProfileSerializer(serializers.ModelSerializer):
+	author = serializers.ReadOnlyField(source = 'author.username')
+	excluded_ingredients = IngredientSerializer(many = True, required = False, default = [])
 	class Meta:
 		model = ExclusionProfile
 		fields = ['name', 'description', 'author', 'url', 'excluded_ingredients']
