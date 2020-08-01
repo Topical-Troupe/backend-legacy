@@ -72,7 +72,7 @@ Topical is an API
 { "tags": [string] }
 ```
 
-### User
+#### User
 
 `api/me/` – gets the profile of the current user
 
@@ -80,7 +80,7 @@ Topical is an API
 
 `api/user/exclusions` – gets all ingredients excluded by the user.
 
-#### GET response
+##### GET response
 
 ```json
 {
@@ -96,7 +96,7 @@ Topical is an API
 }
 ```
 
-### Exclusion Profile
+#### Exclusion Profile
 
 `api/profiles/<pk>/subscribe/` – view or change whether or not the user is subscribed to a profile. Allows `GET`, `POST`, and `DELETE` methods. `POST` is used to subscribe, and `DELETE` is used to unsubscribe. If the user tries to unsubscribe from a profile they own, this will return a `409 - Conflict` (instead of unsubscribing, they should be disabling or deleting their own profiles).
 

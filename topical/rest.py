@@ -73,13 +73,8 @@ class ProductViewSet(viewsets.ModelViewSet):
 				'violations': [],
 				'ingredient_list': []
 			}
-			excluded_ingredients = None
-			if request.user.is_authenticated:
-				setup_user(request)
-				excluded_ingredients = request.user.excluded_ingredients.all()
-			else:
-				excluded_ingredients = User.get_default_exclusions()
-			for ingredient in product.ingredients.all():
+			excluded_ingredients = request.user.get_excluded()
+			for ingredient in product.ingredients.iterator():
 				ing_obj = {
 					'name': ingredient.name,
 					'slug': ingredient.slug,
