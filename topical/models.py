@@ -63,7 +63,6 @@ class IngredientName(models.Model):
 		return self.name
 
 class ExclusionProfile(models.Model):
-	uuid = models.UUIDField(default = uuid4, editable = False, unique = True)
 	name = models.CharField(max_length = MAX_NAME_LEN)
 	description = models.CharField(max_length = MAX_DESCRIPTION_LEN, blank = True)
 	author = models.ForeignKey(to = get_user_model(), on_delete = models.CASCADE, related_name = 'own_profiles')
