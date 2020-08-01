@@ -72,17 +72,17 @@ def search_products(request):
                 'description',
                 'author__username'
         )).filter(name__search = profile_q)
-        uuids = []
+        ids = []
         for profile in profiles.iterator():
-            if profile.uuid in uuids:
+            if profile.pk in ids:
                 continue
-            uuids.append(profile.uuid)
+            ids.append(profile.pk)
             response['count'] += 1
             obj = {
                 'name': profile.name,
                 'author': profile.author.username,
                 'description': profile.description,
-                'uuid': profile.uuid,
+                'id': profile.pk,
                 'exclusion_count': len(profile.excluded_ingredients)
             }
             response['results'].append(obj)
