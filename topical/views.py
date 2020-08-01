@@ -13,6 +13,8 @@ def setup_user(request):
         profile = ExclusionProfile()
         profile.setup_defaults(request)
         profile.save()
+        profile.subscribers.add(user)
+        profile.enabled.add(user)
         user.is_setup = True
         user.save()
     return HttpResponse(status = 200)

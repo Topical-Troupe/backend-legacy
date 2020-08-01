@@ -2,6 +2,7 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
+from uuid import uuid4
 
 MAX_DESCRIPTION_LEN = 8192
 MAX_NAME_LEN = 512
@@ -62,6 +63,7 @@ class IngredientName(models.Model):
 		return self.name
 
 class ExclusionProfile(models.Model):
+	uuid = models.UUIDField(default = uuid4, editable = False, unique = True)
 	name = models.CharField(max_length = MAX_NAME_LEN)
 	description = models.CharField(max_length = MAX_DESCRIPTION_LEN, blank = True)
 	author = models.ForeignKey(to = get_user_model(), on_delete = models.CASCADE, related_name = 'own_profiles')
