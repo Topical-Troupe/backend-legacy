@@ -13,10 +13,14 @@ class User(AbstractUser):
 	is_setup = models.BooleanField(default = False)
 	def get_excluded(self):
 		output = []
-		for profile in self.profiles.iterator():
-			for ingredient in profile.excluded_ingredients.iterator():
-				if not ingredient in output:
-					output.append(ingredient)
+		if self.is_authenticated():
+			for profile in self.profiles.iterator():
+				for ingredient in profile.excluded_ingredients.iterator():
+					if not ingredient in output:
+						output.append(ingredient)
+		else:
+			for ingredient in ExclusionProfile.objects.get(pk = 0).iterator():
+				output.append(ingredient)
 		return output
 
 class Product(models.Model):
