@@ -29,7 +29,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
 		if not request.User.is_authenticated:
 			return HttpResponse(status = 401)
 		if request.method == 'POST':
-			if ingredient not in exclusions.all():
+			if ingredient not in exclusions.iterator():
 				exclusions.add(ingredient)
 			return HttpResponse(status = 200)
 		if request.method == 'DELETE':
@@ -114,7 +114,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 		data = json.loads(request.body)
 		tag = Tag.by_name(data['tags'])
 		if request.method == 'POST':
-			if tag not in product.tags.all():
+			if tag not in product.tags.iterator():
 				product.tags.add(tag)
 			return HttpResponse(status = 200)
 		if request.method == 'DELETE':
@@ -219,13 +219,13 @@ class ProfileViewSet(viewsets.ModelViewSet):
 		if request.method == 'POST':
 			for name in data['names']:
 				ingredient = Ingredient.by_name(name)
-				if ingredient is not None and ingredient not in profile.excluded_ingredients:
+				if ingredient is not None and ingredient not in profile.excluded_ingredients.iterator():
 					profile.excluded_ingredients.add(ingredient)
 			return HttpResponse(status = 200)
 		if request.method == 'DELETE':
 			for name in data['names']:
 				ingredient = Ingredient.by_name(name)
-				if ingredient is not None and ingredient in profile.excluded_ingredients:
+				if ingredient is not None and ingredient in profile.excluded_ingredients.iterator():
 					profile.excluded_ingredients.remove(ingredient)
 			return HttpResponse(status = 200)
 		return HttpResponse(status = 405)

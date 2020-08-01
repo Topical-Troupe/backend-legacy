@@ -75,13 +75,9 @@ class ExclusionProfile(models.Model):
 	enabled = models.ManyToManyField(to = get_user_model(), symmetrical = True, blank = True, related_name = 'profiles')
 	excluded_ingredients = models.ManyToManyField(to = Ingredient, symmetrical = True, blank = True, related_name = 'excluded_by')
 	def setup_defaults(self, request):
-		self.name = 'default'
-		self.description = "Topical's default exclusion list based on the Mayoclinic's list of common irritants."
-		self.author = request.user
-		self.save()
-		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
-		for ingredient in Ingredient.objects.filter(names__in = common_names).iterator():
-			self.excluded_ingredients.add(ingredient)
+		profile = ExclusionProfile.objects.get(pk = 1)
+		profile.enabled.add(request.user)
+		profile.subscribers.add(request.user)
 	def __str__(self):
 		return f'EProfile #{self.pk}: {self.name} by {self.author.username}'
 
