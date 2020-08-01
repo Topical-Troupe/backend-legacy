@@ -5,14 +5,15 @@ from .models import ExclusionProfile, Ingredient, IngredientName, Product, User
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
-		fields = ['username', 'first_name', 'last_name', 'excluded_ingredients']
+		fields = ['username', 'first_name', 'last_name']
 
 class RelatedNameSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = IngredientName
 		fields = ['name']
 
-class IngredientSerializer(serializers.ModelSerializer):
+class IngredientSerializer(serializers.HyperlinkedModelSerializer):
+	names = serializers.Field(source = 'names.name')
 	slug = serializers.ReadOnlyField()
 	names = RelatedNameSerializer(read_only = False, many = True, required = False, default = [])
 

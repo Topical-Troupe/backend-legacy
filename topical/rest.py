@@ -139,11 +139,7 @@ class UserViewSet(viewsets.ModelViewSet):
 		return Response(serializer.data)
 	@action(detail = False, methods = ['GET'])
 	def exclusions(self, request):
-		exclusions = None
-		if request.user.is_authenticated:
-			exclusions = request.user.excluded_ingredients.all()
-		else:
-			exclusions = User.get_default_exclusions()
+		exclusions = request.user.get_excluded()
 		response = {
 			'count': len(exclusions),
 			'items': []
