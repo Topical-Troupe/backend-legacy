@@ -15,7 +15,8 @@ class User(AbstractUser):
 		output = []
 		for profile in self.profiles.iterator():
 			for ingredient in profile.excluded_ingredients.iterator():
-				output.append(ingredient)
+				if not ingredient in output:
+					output.append(ingredient)
 		return output
 
 class Product(models.Model):
