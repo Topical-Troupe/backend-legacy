@@ -98,7 +98,7 @@ Topical is an API
 
 ### Exclusion Profile
 
-`api/profiles/<uuid>/subscribe/` – view or change whether or not the user is subscribed to a profile. Allows `GET`, `POST`, and `DELETE` methods. `POST` is used to subscribe, and `DELETE` is used to unsubscribe. If the user tries to unsubscribe from a profile they own, this will return a `409 - Conflict` (instead of unsubscribing, they should be disabling or deleting their own profiles).
+`api/profiles/<pk>/subscribe/` – view or change whether or not the user is subscribed to a profile. Allows `GET`, `POST`, and `DELETE` methods. `POST` is used to subscribe, and `DELETE` is used to unsubscribe. If the user tries to unsubscribe from a profile they own, this will return a `409 - Conflict` (instead of unsubscribing, they should be disabling or deleting their own profiles).
 
 ##### GET response
 
@@ -111,9 +111,9 @@ Topical is an API
 
 **NOTE**: `"enabled"` is only present if `"subscribed"` is `true`.
 
-`api/profiles/<uuid>/enabled/` – view or change whether or not a profile is enabled. Allows `GET`, `POST`, and `DELETE` methods. Its `GET` response body is the same as `.../subscribed/`, since it literally calls it. `POST` and `DELETE` enable and disable a profile respectively.
+`api/profiles/<pk>/enabled/` – view or change whether or not a profile is enabled. Allows `GET`, `POST`, and `DELETE` methods. Its `GET` response body is the same as `.../subscribed/`, since it literally calls it. `POST` and `DELETE` enable and disable a profile respectively.
 
-`api/profiles/<uuid>/excludes/` – view or change the ingredients excluded by this profile. Allows `GET` for all users, and allows `POST` and `DELETE` for the profile's author.
+`api/profiles/<pk>/excludes/` – view or change the ingredients excluded by this profile. Allows `GET` for all users, and allows `POST` and `DELETE` for the profile's author.
 
 ##### GET response
 
@@ -213,7 +213,7 @@ Topical is an API
             "name": string,
             "author": string,
             "description": string,
-            "uuid": string,
+            "pk": int,
             "exclusion_count": int
         }, ...
     ]
