@@ -12,7 +12,7 @@ class Command(BaseCommand):
 			return
 		else:
 			admin = admin[0]
-		profile = ExclusionProfile.objects.filter(pk = 0)
+		profile = ExclusionProfile.objects.filter(pk = 1)
 		if len(profile) == 0:
 			profile = ExclusionProfile()
 		else:
@@ -26,8 +26,10 @@ class Command(BaseCommand):
 			if ingredient is None:
 				ingredient = Ingredient()
 				ingredient.name = name
+				ingredient.description = ''
 				ingredient.save()
-			if profile.excluded_ingredients.filter(pk = ingredient.pk) == 0:
-				profile.excluded_ingredients.add((ingredient))
+			if ingredient not in profile.excluded_ingredients.iterator():
+				profile.excluded_ingredients.add(ingredient)
+		profile.save()
 		print('successfully set up defaults!')
 			
