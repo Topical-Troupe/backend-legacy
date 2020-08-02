@@ -22,15 +22,21 @@ class IngredientViewSet(viewsets.ModelViewSet):
 		if request.method == 'GET':
 			is_excluded = ingredient in request.user.excluded_ingredients.all()
 			return JsonResponse({ 'excluded': is_excluded })
+		data = json.loads(request.body)
+		profile = None
+		if hasattr(data, 'profile'):
+			profile = get_object_or_404(ExclusionProfile, pk = data['profile'])
+		if profile is None:
+			return HttpResponse(status = 400)
 		if not request.user.is_authenticated:
 			return HttpResponse(status = 401)
 		if request.method == 'POST':
 			if ingredient not in exclusions.iterator():
-				exclusions.add(ingredient)
+				profile.excluded_ingredients.add(ingredient)
 			return HttpResponse(status = 200)
 		if request.method == 'DELETE':
 			if ingredient in exclusions.all():
-				exclusions.remove(ingredient)
+				profile.excluded_ingredients.remove(ingredient)
 			return HttpResponse(status = 200)
 		return HttpResponse(status = 405)
 
