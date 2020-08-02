@@ -3,21 +3,23 @@ from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 
-from .models import IngredientName, Product, Ingredient, IngredientTagEntry, Tag, User
+from .models import ExclusionProfile, IngredientName, Product, Ingredient, IngredientTagEntry, Tag, User
 from .foreign import get_product_or_create
 
 def setup_user(request):
     user = User.objects.get(username = request.user.username)
     if not user.is_setup:
         print('setting up user')
-        for ingredient in User.get_default_exclusions():
-            user.excluded_ingredients.add(ingredient)
+        profile = ExclusionProfile.get(pk = 0)
+        profile.subscribers.add(user)
+        profile.enabled.add(user)
         user.is_setup = True
         user.save()
     return HttpResponse(status = 200)
 
 def search_products(request):
     name_q = request.GET.get('name')
+    profile_q = request.GET.get('profile')
     upc_q = request.GET.get('upc')
     print(upc_q)
     excluded_ingredients = None
@@ -27,7 +29,7 @@ def search_products(request):
     }
     if request.user.is_authenticated:
         setup_user(request)
-        excluded_ingredients = request.user.excluded_ingredients
+        excluded_ingredients = request.user.get_excluded()
     else:
         excluded_ingredients = User.get_default_exclusions()
     if name_q is not None:
@@ -36,7 +38,7 @@ def search_products(request):
                 'tags__name',
                 'name',
                 'description',
-                'ingredients__names__name'
+                'ingredients__names__name',
         )).filter(search = name_q)
         upcs = []
         for product in products.iterator():
@@ -50,10 +52,8 @@ def search_products(request):
                 'name': product.name,
                 'violations': []
             }
-            ingredients = product.ingredients.all()
-            for n in range(len(ingredients)):
-                ingredient = ingredients[n]
-                if ingredient in excluded_ingredients.all():
+            for ingredient in product.ingredients.iterator():
+                if ingredient in excluded_ingredients:
                     violation_data = {
                         'slug': ingredient.slug,
                         'description': ingredient.description,
@@ -62,6 +62,27 @@ def search_products(request):
                     for name in ingredient.names:
                         violation_data['names'].append(name.name)
                     obj['violations'].append(violation_data)
+            response['results'].append(obj)
+    if profile_q is not None:
+        profiles = ExclusionProfile.objects.annotate(
+            search = SearchVector(
+                'name',
+                'description',
+                'author__username'
+        )).filter(name__search = profile_q)
+        ids = []
+        for profile in profiles.iterator():
+            if profile.pk in ids:
+                continue
+            ids.append(profile.pk)
+            response['count'] += 1
+            obj = {
+                'name': profile.name,
+                'author': profile.author.username,
+                'description': profile.description,
+                'id': profile.pk,
+                'exclusion_count': len(profile.excluded_ingredients)
+            }
             response['results'].append(obj)
     if upc_q is not None:
         product = get_product_or_create(upc_q)
