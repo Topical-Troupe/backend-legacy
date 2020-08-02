@@ -2,6 +2,7 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
+from uuid import uuid4
 
 MAX_DESCRIPTION_LEN = 8192
 MAX_NAME_LEN = 512
@@ -9,10 +10,18 @@ MAX_NAME_LEN = 512
 DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrance", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
 
 class User(AbstractUser):
-	is_setup = models.BooleanField(default=False)
-	def get_default_exclusions():
-		common_names = IngredientName.objects.filter(name__in = DEFAULT_EXCLUSIONS)
-		return Ingredient.objects.filter(names__in = common_names).all()
+	is_setup = models.BooleanField(default = False)
+	def get_excluded(self):
+		output = []
+		if self.is_authenticated:
+			for profile in self.profiles.iterator():
+				for ingredient in profile.excluded_ingredients.iterator():
+					if not ingredient in output:
+						output.append(ingredient)
+		else:
+			for ingredient in ExclusionProfile.objects.get(pk = 0).iterator():
+				output.append(ingredient)
+		return output
 
 class Product(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
@@ -27,7 +36,6 @@ class Ingredient(models.Model):
 	slug = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	description = models.TextField(max_length = MAX_DESCRIPTION_LEN, blank = True)
 	in_products = models.ManyToManyField(to = Product, symmetrical = True, related_name = 'ingredients')
-	excluded_by = models.ManyToManyField(to = get_user_model(), symmetrical = True, related_name = 'excluded_ingredients', blank = True)
 	def save(self, *args, **kwargs):
 		self.slug = self.generate_slug()
 		basename = self.ensure_basename()
@@ -58,6 +66,20 @@ class IngredientName(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)
 	def __str__(self):
 		return self.name
+
+class ExclusionProfile(models.Model):
+	name = models.CharField(max_length = MAX_NAME_LEN)
+	description = models.CharField(max_length = MAX_DESCRIPTION_LEN, blank = True)
+	author = models.ForeignKey(to = get_user_model(), on_delete = models.CASCADE, related_name = 'own_profiles')
+	subscribers = models.ManyToManyField(to = get_user_model(), symmetrical = True, related_name = 'all_profiles')
+	enabled = models.ManyToManyField(to = get_user_model(), symmetrical = True, blank = True, related_name = 'profiles')
+	excluded_ingredients = models.ManyToManyField(to = Ingredient, symmetrical = True, blank = True, related_name = 'excluded_by')
+	def setup_defaults(self, request):
+		profile = ExclusionProfile.objects.get(pk = 1)
+		profile.enabled.add(request.user)
+		profile.subscribers.add(request.user)
+	def __str__(self):
+		return f'EProfile #{self.pk}: {self.name} by {self.author.username}'
 
 class Tag(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN, unique = True)
