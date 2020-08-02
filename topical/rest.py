@@ -18,11 +18,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
 	def exclude(self, request, slug):
 		ingredient = get_object_or_404(Ingredient, slug = slug)
-		exclusions = None
-		if request.User.is_authenticated:
-			exclusions = request.user.excluded_ingredients
-		else:
-			exclusions = User.get_default_exclusions()
+		exclusions = request.user.get_excluded()
 		if request.method == 'GET':
 			is_excluded = ingredient in request.user.excluded_ingredients.all()
 			return JsonResponse({ 'excluded': is_excluded })
