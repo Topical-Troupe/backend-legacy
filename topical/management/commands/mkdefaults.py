@@ -28,10 +28,8 @@ class Command(BaseCommand):
 				ingredient = Ingredient()
 				ingredient.name = name
 				ingredient.description = ''
-				try:
-					ingredient.save()
-				except:
-					pass
+				ingredient.save()
+				continue
 			if ingredient not in profile.excluded_ingredients.all():
 				ingredient.excluded_by.add(profile)
 		profile.save()

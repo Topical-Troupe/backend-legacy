@@ -54,8 +54,7 @@ class Ingredient(models.Model):
 			basename.ingredient = self
 			return basename
 	def by_name(name):
-		names = IngredientName.objects.filter(name__iexact = name)
-		res = Ingredient.objects.filter(names__in = names)
+		res = Ingredient.objects.filter(names__name__iexact = name)
 		if len(res) == 0:
 			return None
 		else:
