@@ -19,7 +19,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
 	def exclude(self, request, slug):
 		ingredient = get_object_or_404(Ingredient, slug = slug)
 		exclusions = None
-		if request.User.is_authenticated:
+		if request.user.is_authenticated:
 			exclusions = request.user.excluded_ingredients
 		else:
 			exclusions = User.get_default_exclusions()
