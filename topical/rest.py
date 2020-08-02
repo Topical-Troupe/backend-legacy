@@ -70,6 +70,8 @@ class ProductViewSet(viewsets.ModelViewSet):
 		product = get_object_or_404(Product, upc = upc)
 		if request.method == 'GET':
 			response = {
+				'name': product.name,
+				'image_url': product.image_url,
 				'violations': [],
 				'ingredient_list': []
 			}
