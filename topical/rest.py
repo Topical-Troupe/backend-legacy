@@ -24,7 +24,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
 			return JsonResponse({ 'excluded': is_excluded })
 		data = json.loads(request.body)
 		profile = None
-		if hasattr(data, 'profile'):
+		if 'profile' in data:
 			profile = get_object_or_404(ExclusionProfile, pk = data['profile'])
 		if profile is None:
 			return HttpResponse(status = 400)
