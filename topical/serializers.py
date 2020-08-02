@@ -52,7 +52,7 @@ class IngredientNameSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Product
-		fields = ['name', 'url', 'upc', 'image_url', 'description'] 
+		fields = ['name', 'upc', 'image_url', 'description'] 
 
 class ProfileSerializer(serializers.ModelSerializer):
 	author = serializers.ReadOnlyField(source = 'author.username')

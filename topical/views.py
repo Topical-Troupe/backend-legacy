@@ -59,7 +59,7 @@ def search_products(request):
                         'description': ingredient.description,
                         'names': []
                     }
-                    for name in ingredient.names:
+                    for name in ingredient.names.iterator():
                         violation_data['names'].append(name.name)
                     obj['violations'].append(violation_data)
             response['results'].append(obj)

@@ -19,7 +19,7 @@ class User(AbstractUser):
 					if not ingredient in output:
 						output.append(ingredient)
 		else:
-			for ingredient in ExclusionProfile.objects.get(pk = 0).iterator():
+			for ingredient in ExclusionProfile.objects.get(pk = 1).iterator():
 				output.append(ingredient)
 		return output
 
