@@ -23,13 +23,15 @@ class Command(BaseCommand):
 		profile.author = admin
 		profile.save()
 		for name in DEFAULT_EXCLUSIONS:
-			ingredient = Ingredient.by_name(name)
+			ingredient = Ingredient.by_name(name.capitalize())
 			if ingredient is None:
 				ingredient = Ingredient()
 				ingredient.name = name
 				ingredient.description = ''
-				ingredient.save()
-				continue
+				try:
+					ingredient.save()
+				except:
+					continue
 			if ingredient not in profile.excluded_ingredients.all():
 				ingredient.excluded_by.add(profile)
 		profile.save()
