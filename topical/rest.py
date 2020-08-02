@@ -32,11 +32,11 @@ class IngredientViewSet(viewsets.ModelViewSet):
 			return HttpResponse(status = 401)
 		if request.method == 'POST':
 			if ingredient not in exclusions:
-				profile.excluded_ingredients.add(ingredient)
+				ingredient.excluded_by.add(profile)
 			return HttpResponse(status = 200)
 		if request.method == 'DELETE':
 			if ingredient in exclusions:
-				profile.excluded_ingredients.remove(ingredient)
+				ingredient.excluded_by.remove(profile)
 			return HttpResponse(status = 200)
 		return HttpResponse(status = 405)
 
