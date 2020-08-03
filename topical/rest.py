@@ -79,9 +79,11 @@ class IngredientViewSet(viewsets.ModelViewSet):
 				}
 				response['top_lists'].append(obj)
 		if hasattr(ingredient, 'tag_stats'):
-			for tag in ingredient.tag_stats.annotate(prod_count = Count('matches')).order_by('-prod_count').iterator():
+			for entry in ingredient.tag_stats.for_tag.annotate(prod_count = Count('matches')).order_by('-matches').iterator():
 				if len(response['top_tags']) < 5:
-					response['top_tags'].append(tag.name)
+					response['top_tags'].append(entry.tag.name)
+				else:
+					break
 		return JsonResponse(response)
 router.register('ingredient', IngredientViewSet)
 
