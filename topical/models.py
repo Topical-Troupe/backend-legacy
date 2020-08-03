@@ -18,6 +18,12 @@ class User(AbstractUser):
 				for ingredient in profile.excluded_ingredients.iterator():
 					if not ingredient in output:
 						output.append(ingredient)
+			if len(output) == 0:
+				default_profile = ExclusionProfile.objects.get(pk=1)
+				default_ingredients = default_profile.excluded_ingredients.all()
+				for ingredient in default_ingredients:
+					if ingredient not in output:
+						output.append(ingredient)
 		else:
 			for ingredient in ExclusionProfile.objects.get(pk = 1).iterator():
 				output.append(ingredient)

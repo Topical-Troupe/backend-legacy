@@ -78,6 +78,12 @@ class ProductViewSet(viewsets.ModelViewSet):
 				'ingredient_list': []
 			}
 			excluded_ingredients = request.user.get_excluded()
+			fuzzy_names = []
+			for ingredient in excluded_ingredients:
+				fuzzies = ingredient.names.all()
+				for name in fuzzies:
+					name = name.name.lower()
+					fuzzy_names.append(name)
 			for ingredient in product.ingredients.iterator():
 				ing_obj = {
 					'name': ingredient.name,
@@ -87,8 +93,12 @@ class ProductViewSet(viewsets.ModelViewSet):
 				}
 				for name in ingredient.names.all():
 					ing_obj['names'].append(name.name)
-				if ingredient in excluded_ingredients:
-					response['violations'].append(ingredient.name)
+					lcname = name.name.lower()
+					if lcname in fuzzy_names:
+						if ingredient.name not in response['violations']:
+							response['violations'].append(ingredient.name)
+				#if ingredient in excluded_ingredients:
+					#response['violations'].append(ingredient.name)
 				response['ingredient_list'].append(ing_obj)		
 			return JsonResponse(response)	
 		if not request.user.is_staff:
