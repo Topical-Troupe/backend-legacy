@@ -43,6 +43,8 @@ Topical is an API
 
 ```json
 {
+    "name": string,
+    "image_url": string,
     "violations": [string],
     "ingredient_list": [Ingredient]
 }
