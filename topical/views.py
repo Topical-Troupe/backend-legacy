@@ -10,7 +10,7 @@ def setup_user(request):
     user = User.objects.get(username = request.user.username)
     if not user.is_setup:
         print('setting up user')
-        profile = ExclusionProfile.get(pk = 0)
+        profile = ExclusionProfile.objects.get(pk = 0)
         profile.subscribers.add(user)
         profile.enabled.add(user)
         user.is_setup = True
