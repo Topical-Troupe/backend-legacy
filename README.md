@@ -52,12 +52,18 @@ Topical is an API
 ```json
 {
     "exclusion_count": int,
-    "top_lists": [ExclusionProfile],
+    "top_lists": [
+        {
+            "name": string,
+            "author": string,
+            "pk": int
+        }, ...
+    ],
     "top_tags": [string]
 }
 ```
 
-
+**NOTE**: `top_lists` and `top_tags` are limited to 5 items each.
 
 #### Product
 
