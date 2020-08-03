@@ -12,7 +12,7 @@ def get_excluded(user):
 		return user.get_excluded()
 	else:
 		output = []
-		for ingredient in ExclusionProfile.objects.get(pk = 1).iterator():
+		for ingredient in ExclusionProfile.objects.get(pk = 1).excluded_ingredients.iterator():
 			output.append(ingredient)
 		return output
 
