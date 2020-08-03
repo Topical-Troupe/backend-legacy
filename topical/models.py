@@ -34,10 +34,15 @@ class User(AbstractUser):
 					if not ingredient in output:
 						output.append(ingredient)
 			if len(output) == 0:
-				print("len = 0")
 				default_profile = ExclusionProfile.objects.get(pk=1)
 				default_ingredients = default_profile.excluded_ingredients.all()
+				print("testing the .lower function")
 				for ingredient in default_ingredients:
+					fuzzies = ingredient.names.all()
+					print(fuzzies)
+					for name in fuzzies:
+						name = name.name.lower()
+						print(name)
 					output.append(ingredient)
 			print(output)
 		else:
