@@ -78,19 +78,12 @@ class ProductViewSet(viewsets.ModelViewSet):
 				'ingredient_list': []
 			}
 			excluded_ingredients = request.user.get_excluded()
-			print("here's out list of excluded ingredients.  Are they objects?")
-			print(excluded_ingredients)
 			fuzzy_names = []
 			for ingredient in excluded_ingredients:
-					fuzzies = ingredient.names.all()
-					print("fuzzies as a list")
-					print(fuzzies)
-					for name in fuzzies:
-						name = name.name.lower()
-						print(name)
-						fuzzy_names.append(name)
-			print(fuzzy_names)
-			print("great.  Now, can you see the product ingredients?")
+				fuzzies = ingredient.names.all()
+				for name in fuzzies:
+					name = name.name.lower()
+					fuzzy_names.append(name)
 			for ingredient in product.ingredients.iterator():
 				ing_obj = {
 					'name': ingredient.name,
@@ -100,17 +93,10 @@ class ProductViewSet(viewsets.ModelViewSet):
 				}
 				for name in ingredient.names.all():
 					ing_obj['names'].append(name.name)
-					print(name)
-					print("can we make it lower case?")
 					lcname = name.name.lower()
-					print(lcname)
-					print("is this ingredient in the list of fuzzy names?")	
 					if lcname in fuzzy_names:
-						print("YES")
 						if ingredient.name not in response['violations']:
 							response['violations'].append(ingredient.name)
-							print("violation added")
-							print(response['violations'])
 				#if ingredient in excluded_ingredients:
 					#response['violations'].append(ingredient.name)
 				response['ingredient_list'].append(ing_obj)		
