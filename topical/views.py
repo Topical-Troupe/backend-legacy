@@ -29,9 +29,7 @@ def search_products(request):
     }
     if request.user.is_authenticated:
         setup_user(request)
-        excluded_ingredients = request.user.get_excluded()
-    else:
-        excluded_ingredients = User.get_default_exclusions()
+    excluded_ingredients = request.user.get_excluded()
     if name_q is not None:
         products = Product.objects.annotate(
             search = SearchVector(
