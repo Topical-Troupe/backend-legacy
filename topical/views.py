@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 
-from .models import ExclusionProfile, IngredientName, Product, Ingredient, IngredientTagEntry, Tag, User
+from .models import ExclusionProfile, IngredientName, Product, Ingredient, IngredientTagEntry, Tag, User, get_excluded
 from .foreign import get_product_or_create
 
 def setup_user(request):
@@ -29,7 +29,7 @@ def search_products(request):
     }
     if request.user.is_authenticated:
         setup_user(request)
-    excluded_ingredients = request.user.get_excluded()
+    excluded_ingredients = get_excluded(request.user)
     if name_q is not None:
         products = Product.objects.annotate(
             search = SearchVector(

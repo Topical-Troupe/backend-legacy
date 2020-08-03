@@ -7,21 +7,25 @@ from uuid import uuid4
 MAX_DESCRIPTION_LEN = 8192
 MAX_NAME_LEN = 512
 
+def get_excluded(user):
+	if user.is_authenticated:
+		return user.get_excluded()
+	else:
+		output = []
+		for ingredient in ExclusionProfile.objects.get(pk = 1).iterator():
+			output.append(ingredient)
+		return output
+
 DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrance", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
 
 class User(AbstractUser):
 	is_setup = models.BooleanField(default = False)
 	def get_excluded(self):
 		output = []
-		if self.is_authenticated:
-			for profile in self.profiles.iterator():
-				for ingredient in profile.excluded_ingredients.iterator():
-					if not ingredient in output:
-						output.append(ingredient)
-		else:
-			for ingredient in ExclusionProfile.objects.get(pk = 1).iterator():
-				output.append(ingredient)
-		return output
+		for profile in self.profiles.iterator():
+			for ingredient in profile.excluded_ingredients.iterator():
+				if not ingredient in output:
+					output.append(ingredient)
 
 class Product(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
