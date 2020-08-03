@@ -72,7 +72,12 @@ class IngredientViewSet(viewsets.ModelViewSet):
 		for profile in ingredient.excluded_by.annotate(sub_count = Count('subscribers')).order_by('-sub_count').iterator():
 			response['exclusion_count'] += 1
 			if len(response['top_lists']) < 5:
-				response['top_lists'].append(profile)
+				obj = {
+					'name': profile.name,
+					'author': profile.author.username,
+					'pk': profile.pk
+				}
+				response['top_lists'].append(obj)
 		if hasattr(ingredient, 'tag_stats'):
 			for tag in ingredient.tag_stats.annotate(prod_count = Count('matches')).order_by('-prod_count').iterator():
 				if len(response['top_tags']) < 5:
