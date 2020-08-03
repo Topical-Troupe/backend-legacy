@@ -6,17 +6,6 @@ from django.shortcuts import redirect, get_object_or_404
 from .models import ExclusionProfile, IngredientName, Product, Ingredient, IngredientTagEntry, Tag, User
 from .foreign import get_product_or_create
 
-def setup_user(request):
-    user = User.objects.get(username = request.user.username)
-    if not user.is_setup:
-        print('setting up user')
-        profile = ExclusionProfile.get(pk = 0)
-        profile.subscribers.add(user)
-        profile.enabled.add(user)
-        user.is_setup = True
-        user.save()
-    return HttpResponse(status = 200)
-
 def search_products(request):
     name_q = request.GET.get('name')
     profile_q = request.GET.get('profile')
@@ -27,11 +16,7 @@ def search_products(request):
         'count': 0,
         'results': []
     }
-    if request.user.is_authenticated:
-        setup_user(request)
-        excluded_ingredients = request.user.get_excluded()
-    else:
-        excluded_ingredients = User.get_default_exclusions()
+    excluded_ingredients = request.user.get_excluded()
     if name_q is not None:
         products = Product.objects.annotate(
             search = SearchVector(

@@ -83,10 +83,6 @@ class ExclusionProfile(models.Model):
 	subscribers = models.ManyToManyField(to = get_user_model(), symmetrical = True, related_name = 'all_profiles')
 	enabled = models.ManyToManyField(to = get_user_model(), symmetrical = True, blank = True, related_name = 'profiles')
 	excluded_ingredients = models.ManyToManyField(to = Ingredient, symmetrical = True, blank = True, related_name = 'excluded_by')
-	def setup_defaults(self, request):
-		profile = ExclusionProfile.objects.get(pk = 1)
-		profile.enabled.add(request.user)
-		profile.subscribers.add(request.user)
 	def __str__(self):
 		return f'EProfile #{self.pk}: {self.name} by {self.author.username}'
 

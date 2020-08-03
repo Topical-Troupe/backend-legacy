@@ -8,7 +8,6 @@ from rest_framework.response import Response
 from django.db.models.functions import Lower
 from .models import ExclusionProfile, Ingredient, IngredientName, Product, Tag, User
 from .serializers import IngredientSerializer, ProductSerializer, ProfileSerializer, ProfileInitSerializer, UserSerializer
-from .views import setup_user
 
 router = routers.DefaultRouter()
 
