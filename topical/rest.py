@@ -5,7 +5,7 @@ from rest_framework import routers, viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.db.models.functions import Lower
-from .models import ExclusionProfile, Ingredient, IngredientName, Product, Tag, User
+from .models import ExclusionProfile, Ingredient, IngredientName, Product, Tag, User, get_excluded
 from .serializers import IngredientSerializer, ProductSerializer, ProfileSerializer, ProfileInitSerializer, UserSerializer
 from .views import setup_user
 
@@ -18,7 +18,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
 	def exclude(self, request, slug):
 		ingredient = get_object_or_404(Ingredient, slug = slug)
-		exclusions = request.user.get_excluded()
+		exclusions = get_excluded(request.user)
 		if request.method == 'GET':
 			is_excluded = ingredient in request.user.excluded_ingredients.all()
 			return JsonResponse({ 'excluded': is_excluded })
@@ -77,7 +77,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 				'violations': [],
 				'ingredient_list': []
 			}
-			excluded_ingredients = request.user.get_excluded()
+			excluded_ingredients = get_excluded(request.user)
 			fuzzy_names = []
 			for ingredient in excluded_ingredients:
 				fuzzies = ingredient.names.all()
@@ -148,7 +148,7 @@ class UserViewSet(viewsets.ModelViewSet):
 		return Response(serializer.data)
 	@action(detail = False, methods = ['GET'])
 	def exclusions(self, request):
-		exclusions = request.user.get_excluded()
+		exclusions = get_excluded(request.user)
 		response = {
 			'count': len(exclusions),
 			'items': []
