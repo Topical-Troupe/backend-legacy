@@ -26,6 +26,7 @@ class User(AbstractUser):
 			for ingredient in profile.excluded_ingredients.iterator():
 				if not ingredient in output:
 					output.append(ingredient)
+		return output
 
 class Product(models.Model):
 	name = models.CharField(max_length = MAX_NAME_LEN)
