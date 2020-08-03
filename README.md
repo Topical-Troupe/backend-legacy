@@ -45,6 +45,20 @@ Topical is an API
 }
 ```
 
+`api/ingredient/<slug>/stats/` – Gets stats on the total exclusions of an ingredient.
+
+##### GET response
+
+```json
+{
+    "exclusion_count": int,
+    "top_lists": [ExclusionProfile],
+    "top_tags": [string]
+}
+```
+
+
+
 #### Product
 
 `api/product/<upc>/ingredients/` – View or change the list of ingredients on a product. Allows `GET`, `POST`, and `DELETE` methods.

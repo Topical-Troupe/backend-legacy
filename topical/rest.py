@@ -66,12 +66,17 @@ class IngredientViewSet(viewsets.ModelViewSet):
 		ingredient = get_object_or_404(Ingredient, slug = slug)
 		response = {
 			'exclusion_count': 0,
-			'top_lists': []
+			'top_lists': [],
+			'top_tags': []
 		}
-		for profile in ingredient.excluded_by.annotate(exc_count = Count('excluded_by')).order_by('-exc_count').iterator():
+		for profile in ingredient.excluded_by.annotate(sub_count = Count('subscribers')).order_by('-sub_count').iterator():
 			response['exclusion_count'] += 1
 			if len(response['top_lists']) < 5:
 				response['top_lists'].append(profile)
+		if hasattr(ingredient, 'tag_stats'):
+			for tag in ingredient.tag_stats.annotate(prod_count = Count('matches')).order_by('-prod_count').iterator():
+				if len(response['top_tags']) < 5:
+					response['top_tags'].append(tag.name)
 		return JsonResponse(response)
 router.register('ingredient', IngredientViewSet)
 
