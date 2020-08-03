@@ -1,3 +1,4 @@
+from django.db.models import Count
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
 import json
@@ -60,7 +61,18 @@ class IngredientViewSet(viewsets.ModelViewSet):
 				else:
 					profile.excluded_ingredients.add(ingredient)	
 		return Response("Ingredient added!", status=status.HTTP_204_NO_CONTENT)
-			
+	@action(detail = True, methods = ['GET'])
+	def stats(self, request, slug):
+		ingredient = get_object_or_404(Ingredient, slug = slug)
+		response = {
+			'exclusion_count': 0,
+			'top_lists': []
+		}
+		for profile in ingredient.excluded_by.annotate(exc_count = Count('excluded_by')).order_by('-exc_count').iterator():
+			response['exclusion_count'] += 1
+			if len(response['top_lists']) < 5:
+				response['top_lists'].append(profile)
+		return JsonResponse(response)
 router.register('ingredient', IngredientViewSet)
 
 class ProductViewSet(viewsets.ModelViewSet):
