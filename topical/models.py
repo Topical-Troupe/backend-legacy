@@ -11,18 +11,22 @@ DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", 
 
 class User(AbstractUser):
 	is_setup = models.BooleanField(default = False)
+	def set_up(self):
+		if not self.is_setup:
+			print('setting up user')
+			profile = ExclusionProfile.get(pk = 1)
+			profile.subscribers.add(self)
+			profile.enabled.add(self)
+			self.is_setup = True
+			self.save()
 	def get_excluded(self):
 		output = []
 		if self.is_authenticated:
+			if not self.is_setup:
+				self.set_up()
 			for profile in self.profiles.iterator():
 				for ingredient in profile.excluded_ingredients.iterator():
 					if not ingredient in output:
-						output.append(ingredient)
-			if len(output) == 0:
-				default_profile = ExclusionProfile.objects.get(pk=1)
-				default_ingredients = default_profile.excluded_ingredients.all()
-				for ingredient in default_ingredients:
-					if ingredient not in output:
 						output.append(ingredient)
 		else:
 			for ingredient in ExclusionProfile.objects.get(pk = 1).iterator():
