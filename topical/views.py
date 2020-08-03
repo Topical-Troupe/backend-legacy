@@ -7,7 +7,7 @@ from .models import ExclusionProfile, IngredientName, Product, Ingredient, Ingre
 from .foreign import get_product_or_create
 
 def setup_user(request):
-    user = User.objects.get(username = request.user.username)
+    user = request.user
     if not user.is_setup:
         print('setting up user')
         profile = ExclusionProfile.objects.get(pk = 1)
