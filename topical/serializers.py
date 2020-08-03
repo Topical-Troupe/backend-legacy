@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
-from .models import Ingredient, IngredientName, Product, User
+from .models import ExclusionProfile, Ingredient, IngredientName, Product, User
 
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
-		fields = ['username', 'first_name', 'last_name', 'excluded_ingredients']
+		fields = ['username', 'url', 'first_name', 'last_name']
 
 class RelatedNameSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -18,7 +18,10 @@ class IngredientSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = Ingredient
-		fields = ['name', 'slug', 'names', 'description']	
+		fields = ['name', 'url', 'slug', 'names', 'description']
+		extra_kwargs = {
+			'url': { 'lookup_field': 'slug'}
+		}
 	
 	def create(self, validated_data):
 		names_data = validated_data.pop('names',[])
@@ -41,12 +44,24 @@ class IngredientSerializer(serializers.HyperlinkedModelSerializer):
 			IngredientName.objects.create(ingredient=ingredient, **name_data)
 		return ingredient
 
-class IngredientNameSerializer(serializers.HyperlinkedModelSerializer):
+class IngredientNameSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = IngredientName
 		fields = ['name', 'ingredient']
 
-class ProductSerializer(serializers.HyperlinkedModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Product
 		fields = ['name', 'upc', 'image_url', 'description'] 
+
+class ProfileSerializer(serializers.ModelSerializer):
+	author = serializers.ReadOnlyField(source = 'author.username')
+	excluded_ingredients = IngredientSerializer(many = True, required = False, default = [])
+	class Meta:
+		model = ExclusionProfile
+		fields = ['name', 'description', 'author', 'url', 'excluded_ingredients']
+
+class ProfileInitSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = ExclusionProfile
+		fields = ['name', 'description']
