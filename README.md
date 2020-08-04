@@ -154,6 +154,12 @@ Topical is an API
 
 `api/user/exclusions` – gets all ingredients excluded by the user.
 
+`api/user/<username>/own_profiles/` – gets all the profiles created by a given user.
+
+`api/user/subscribed/` – gets all the profiles a given user is subscribed to.
+
+`api/user/enabled/` – gets all the profiles a given user has enabled.
+
 ##### GET response
 
 ```json

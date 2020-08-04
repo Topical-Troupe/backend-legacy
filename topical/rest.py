@@ -246,7 +246,23 @@ class UserViewSet(viewsets.ModelViewSet):
 		serializer = ProfileSerializer(
 			user.own_profiles,
 			many = True,
-			context = { 'context': request}
+			context = { 'context': request }
+		)
+		return Response(serializer.data)
+	@action(detail = False, methods = ['GET'])
+	def subscribed(self, request):
+		serializer = ProfileSerializer(
+			request.user.all_profiles,
+			many = True,
+			context = { 'context': request }
+		)
+		return Response(serializer.data)
+	@action(detail = False, methods = ['GET'])
+	def enabled(self, request):
+		serializer = ProfileSerializer(
+			request.user.profiles,
+			many = True,
+			context = { 'context': request }
 		)
 		return Response(serializer.data)
 router.register('user', UserViewSet)
