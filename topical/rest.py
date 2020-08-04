@@ -23,6 +23,27 @@ class IngredientViewSet(viewsets.ModelViewSet):
 			for name in ingredient.names.iterator():
 				response['names'].append(name.name)
 			return JsonResponse(response)
+		if not request.user.is_staff:
+			return HttpResponse(status = 401)
+		data = json.loads(request.body)
+		if request.method == 'POST':
+			for name in data['names']:
+				_ = Ingredient.by_name(name)
+				if _ is not None:
+					continue
+				new_name = IngredientName()
+				new_name.name = name
+				new_name.ingredient = ingredient
+				new_name.save()
+			return HttpResponse(status = 200)
+		if request.method == 'DELETE':
+			for name in data['names']:
+				_ = Ingredient.by_name(name)
+				if _ != ingredient:
+					continue
+				old_name = IngredientName.objects.get(name__iexact = name)
+				old_name.delete()
+			return HttpResponse(status = 200)
 		return HttpResponse(status = 405)
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
 	def exclude(self, request, slug):

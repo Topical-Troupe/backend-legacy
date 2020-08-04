@@ -24,6 +24,14 @@ Topical is an API
 }
 ```
 
+##### POST/DELETE request body
+
+```json
+{
+    'names': [string]
+}
+```
+
 `api/ingredient/<slug>/exclude/` – Check or set whether an ingredient is excluded by the logged in user. Allows `GET`, `POST`, and `DELETE` methods.
 
 ##### GET response
