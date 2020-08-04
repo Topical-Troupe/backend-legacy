@@ -163,9 +163,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 	def tags(self, request, upc):
 		product = get_object_or_404(Product, upc = upc)
 		if request.method == 'GET':
-			response = []
+			response = { 'tags': [] }
 			for tag in product.tags.iterator():
-				response.append(tag.name)
+				response['tags'].append(tag.name)
 			return JsonResponse(response)
 		data = json.loads(request.body)
 		tag = Tag.by_name(data['tags'])

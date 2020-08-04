@@ -104,7 +104,13 @@ Topical is an API
 { "names": [string] }
 ```
 
-`api/product/<upc>/tags` – View or change the tags on a product. These tags are managed on the backend, so there is null-handling already in place.
+`api/product/<upc>/tags/` – View or change the tags on a product. These tags are managed on the backend, so there is null-handling already in place.
+
+##### GET response
+
+```json
+{ "tags": [string] }
+```
 
 ##### POST/DELETE request body
 
