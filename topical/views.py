@@ -7,6 +7,8 @@ from .models import ExclusionProfile, IngredientName, Product, Ingredient, Ingre
 from .foreign import get_product_or_create
 
 def search_products(request):
+    if request.method != 'GET':
+        return HttpResponse(status = 405)
     name_q = request.GET.get('name')
     profile_q = request.GET.get('profile')
     upc_q = request.GET.get('upc')
@@ -77,6 +79,8 @@ def search_products(request):
     return JsonResponse(response)
 
 def fuzzy_name(request, fuzzy):
+	if request.method != 'GET':
+		return HttpResponse(status = 405)
 	result = IngredientName.objects.filter(name__iexact = fuzzy)
 	ingredient = get_object_or_404(Ingredient, names__in = result)
 	return redirect(f'/api/ingredient/{ingredient.slug}/')
@@ -87,10 +91,12 @@ def product_404(request, upc):
     if len(Product.objects.filter(upc = upc)) != 0:
         return HttpResponse(status = 409)
     if request.method == 'GET':
-        return JsonResponse({
-            'info': 'That product was not found! Please POST it with at least the name and UPC included.',
-            'upc': {upc},
-            'url': '/api/product/'
+        return JsonResponse(
+            status = 404,
+            data = {
+                'info': 'That product was not found! Please POST it with at least the name and UPC included.',
+                'upc': {upc},
+                'url': '/api/product/'
         })
     else:
         return HttpResponse(status = 405)
