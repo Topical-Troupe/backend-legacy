@@ -164,7 +164,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 		product = get_object_or_404(Product, upc = upc)
 		if request.method == 'GET':
 			response = []
-			for tag in product.tags:
+			for tag in product.tags.iterator():
 				response.append(tag.name)
 			return JsonResponse(response)
 		data = json.loads(request.body)
@@ -174,7 +174,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 				product.tags.add(tag)
 			return HttpResponse(status = 200)
 		if request.method == 'DELETE':
-			if tag in product.tags.all():
+			if tag in product.tags.iterator():
 				product.tags.remove(tag)
 			return HttpResponse(status = 200)
 router.register('product', ProductViewSet)
