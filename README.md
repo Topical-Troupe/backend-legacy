@@ -14,6 +14,16 @@ Topical is an API
 
 `api/ingredient/fuzzy/<str>/` – Gets an ingredient by any of its names; redirects to the ingredient's proper endpoint.
 
+`api/ingredient/<slug>/names` – View or change all the names of an ingredient. Allows `GET`, `POST`, and `DELETE` methods.
+
+##### GET response
+
+```json
+{
+    "names": [string]
+}
+```
+
 `api/ingredient/<slug>/exclude/` – Check or set whether an ingredient is excluded by the logged in user. Allows `GET`, `POST`, and `DELETE` methods.
 
 ##### GET response

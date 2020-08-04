@@ -16,6 +16,15 @@ class IngredientViewSet(viewsets.ModelViewSet):
 	serializer_class = IngredientSerializer
 	lookup_field = 'slug'
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
+	def names(self, request, slug):
+		ingredient = get_object_or_404(Ingredient, slug = slug)
+		if request.method == 'GET':
+			response = { 'names': [] }
+			for name in ingredient.names.iterator():
+				response['names'].append(name.name)
+			return JsonResponse(response)
+		return HttpResponse(status = 405)
+	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
 	def exclude(self, request, slug):
 		ingredient = get_object_or_404(Ingredient, slug = slug)
 		exclusions = get_excluded(request.user)
