@@ -168,14 +168,21 @@ class ProductViewSet(viewsets.ModelViewSet):
 				response['tags'].append(tag.name)
 			return JsonResponse(response)
 		data = json.loads(request.body)
-		tag = Tag.by_name(data['tags'])
+		tags = []
+		for tag_name in data['tags']:
+			tags.append(Tag.by_name(tag_name))
+		present = [tag for tag in product.tags.iterator()]
 		if request.method == 'POST':
-			if tag not in product.tags.iterator():
-				product.tags.add(tag)
+			for tag in tags:
+				if tag not in present:
+					product.tags.add(tag)
+					present.append(tag)
 			return HttpResponse(status = 200)
 		if request.method == 'DELETE':
-			if tag in product.tags.iterator():
-				product.tags.remove(tag)
+			for tag in tags:
+				if tag in present:
+					product.tags.remove(tag)
+					present.remove(tag)
 			return HttpResponse(status = 200)
 router.register('product', ProductViewSet)
 
