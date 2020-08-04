@@ -46,7 +46,7 @@ class User(AbstractUser):
 			self.set_up()
 		for profile in self.profiles.iterator():
 			for ingredient in profile.excluded_ingredients.iterator():
-				if not ingredient in output:
+				if ingredient not in output:
 					output.append(ingredient)
 		return output
 

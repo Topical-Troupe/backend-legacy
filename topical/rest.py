@@ -196,7 +196,6 @@ class UserViewSet(viewsets.ModelViewSet):
 			return HttpResponse(status = 404)
 		response = {
 			'username': request.user.username,
-			'excluded': [],
 			'own_profiles': [],
 			'subscribed_profiles': [],
 			'enabled_profiles': []
@@ -223,9 +222,6 @@ class UserViewSet(viewsets.ModelViewSet):
 			if profile.author != request.user:
 				obj['author'] = profile.author.username
 			response['enabled_profiles'].append(obj)
-			for ingredient in profile.excluded_ingredients.iterator():
-				if not ingredient.name in response['excluded']:
-					response['excluded'].append(ingredient.name)
 		return Response(response)
 	@action(detail = False, methods = ['GET'])
 	def exclusions(self, request):

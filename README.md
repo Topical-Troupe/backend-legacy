@@ -127,7 +127,6 @@ Topical is an API
 ```json
 {
     "username": string,
-    "excluded": [string],
     "own_profiles": [
         {
             "name": string,
