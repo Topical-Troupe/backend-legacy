@@ -16,7 +16,19 @@ def get_excluded(user):
 			output.append(ingredient)
 		return output
 
-DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrance", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
+DEFAULT_EXCLUSIONS = [
+	"bacitracin",
+	"benzalkonium chloride",
+	"cobalt chloride",
+	"formaldehyde",
+	"fragrance",
+	"potassium dichromate",
+	"nickel",
+	"neomycin",
+	"methylisothiazolinone",
+	"methyldibromo glutaronitrile",
+	"benzophenone 4"
+]
 
 class User(AbstractUser):
 	is_setup = models.BooleanField(default = False)
