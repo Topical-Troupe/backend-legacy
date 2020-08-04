@@ -119,11 +119,15 @@ class ProductViewSet(viewsets.ModelViewSet):
 		data = json.loads(request.body)
 		if request.method == 'POST':
 			for name in data['names']:
-				product.ingredients.add(Ingredient.by_name(name))
+				ingredient = Ingredient.by_name(name)
+				if ingredient is not None:
+					product.ingredients.add(ingredient)
 			return HttpResponse(status = 200)
 		if request.method == 'DELETE':
 			for name in data['names']:
-				product.ingredients.remove(Ingredient.by_name(name))
+				ingredient = Ingredient.by_name(name)
+				if ingredient is not None:
+					product.ingredients.remove(ingredient)
 			return HttpResponse(status = 200)
 	@action(detail = True, methods = ['GET', 'POST', 'DELETE'])
 	def tags(self, request, upc):
