@@ -194,12 +194,39 @@ class UserViewSet(viewsets.ModelViewSet):
 	def me(self, request):
 		if not request.user.is_authenticated:
 			return HttpResponse(status = 404)
-		serializer = UserSerializer(
-			request.user,
-			many = False,
-			context = { 'context': request }
-		)
-		return Response(serializer.data)
+		response = {
+			'username': request.user.username,
+			'excluded': [],
+			'own_profiles': [],
+			'subscribed_profiles': [],
+			'enabled_profiles': []
+		}
+		owned = []
+		for profile in request.user.own_profiles.iterator():
+			owned.append(profile)
+			response['own_profiles'].append({
+				'name': profile.name,
+				'pk': profile.pk
+			})
+		for profile in request.user.all_profiles.iterator():
+			if profile not in owned:
+				response['subscribed_profiles'].append({
+					'name': profile.name,
+					'author': profile.author.username,
+					'pk': profile.pk
+				})
+		for profile in request.user.profiles.iterator():
+			obj = {
+				'name': profile.name,
+				'pk': profile.pk
+			}
+			if profile.author != request.user:
+				obj['author'] = profile.author.username
+			response['enabled_profiles'].append(obj)
+			for ingredient in profile.excluded_ingredients.iterator():
+				if not ingredient.name in response['excluded']:
+					response['excluded'].append(ingredient.name)
+		return Response(response)
 	@action(detail = False, methods = ['GET'])
 	def exclusions(self, request):
 		exclusions = get_excluded(request.user)
