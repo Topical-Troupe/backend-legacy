@@ -251,6 +251,8 @@ class UserViewSet(viewsets.ModelViewSet):
 		return Response(serializer.data)
 	@action(detail = False, methods = ['GET'])
 	def subscribed(self, request):
+		if not request.user.is_authenticated:
+			return HttpResponse(status = 401)
 		serializer = ProfileSerializer(
 			request.user.all_profiles,
 			many = True,
@@ -259,6 +261,8 @@ class UserViewSet(viewsets.ModelViewSet):
 		return Response(serializer.data)
 	@action(detail = False, methods = ['GET'])
 	def enabled(self, request):
+		if not request.user.is_authenticated:
+			return HttpResponse(status = 401)
 		serializer = ProfileSerializer(
 			request.user.profiles,
 			many = True,
