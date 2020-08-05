@@ -12,13 +12,13 @@ class RelatedNameSerializer(serializers.ModelSerializer):
 		model = IngredientName
 		fields = ['name']
 
-class IngredientSerializer(serializers.HyperlinkedModelSerializer):
+class IngredientSerializer(serializers.ModelSerializer):
 	slug = serializers.ReadOnlyField()
 	names = RelatedNameSerializer(read_only = False, many = True, required = False, default = [])
 
 	class Meta:
 		model = Ingredient
-		fields = ['name', 'url', 'slug', 'names', 'description']
+		fields = ['name', 'slug', 'names', 'description']
 		extra_kwargs = {
 			'url': { 'lookup_field': 'slug'}
 		}
