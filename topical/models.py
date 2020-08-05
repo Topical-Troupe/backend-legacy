@@ -16,15 +16,37 @@ def get_excluded(user):
 			output.append(ingredient)
 		return output
 
-DEFAULT_EXCLUSIONS = ["bacitracin", "benzalkonium chloride", "cobalt chloride", "formaldehyde", "fragrance", "potassium dichromate", "nickel", "neomycin", "methylisothiazolinone", "methyldibromo glutaronitrile", "benzophenone 4"]
+DEFAULT_EXCLUSIONS = [
+	"bacitracin",
+	"benzalkonium chloride",
+	"cobalt chloride",
+	"formaldehyde",
+	"fragrance",
+	"potassium dichromate",
+	"nickel",
+	"neomycin",
+	"methylisothiazolinone",
+	"methyldibromo glutaronitrile",
+	"benzophenone 4"
+]
 
 class User(AbstractUser):
 	is_setup = models.BooleanField(default = False)
+	def set_up(self):
+		if not self.is_setup:
+			print('setting up user')
+			profile = ExclusionProfile.objects.get(pk = 1)
+			profile.subscribers.add(self)
+			profile.enabled.add(self)
+			self.is_setup = True
+			self.save()
 	def get_excluded(self):
 		output = []
+		if not self.is_setup:
+			self.set_up()
 		for profile in self.profiles.iterator():
 			for ingredient in profile.excluded_ingredients.iterator():
-				if not ingredient in output:
+				if ingredient not in output:
 					output.append(ingredient)
 		return output
 
@@ -78,10 +100,6 @@ class ExclusionProfile(models.Model):
 	subscribers = models.ManyToManyField(to = get_user_model(), symmetrical = True, related_name = 'all_profiles')
 	enabled = models.ManyToManyField(to = get_user_model(), symmetrical = True, blank = True, related_name = 'profiles')
 	excluded_ingredients = models.ManyToManyField(to = Ingredient, symmetrical = True, blank = True, related_name = 'excluded_by')
-	def setup_defaults(self, request):
-		profile = ExclusionProfile.objects.get(pk = 1)
-		profile.enabled.add(request.user)
-		profile.subscribers.add(request.user)
 	def __str__(self):
 		return f'EProfile #{self.pk}: {self.name} by {self.author.username}'
 

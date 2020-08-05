@@ -14,7 +14,6 @@ urlpatterns = [
     path('api/auth/', include('djoser.urls.authtoken')),
 
 	path('api/', include(router.urls)),
-	path('api/usersetup/', topical_views.setup_user, name = 'user_setup'),
 	path('api/me/', UserViewSet.as_view({ 'get': 'me' }), name = 'me'),
 	path('api/search/', topical_views.search_products, name='search_products'),
 	path('api/ingredient/fuzzy/<str:fuzzy>/', topical_views.fuzzy_name, name = 'fuzzy_name'),
