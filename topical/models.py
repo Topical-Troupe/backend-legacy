@@ -36,8 +36,8 @@ class User(AbstractUser):
 		if not self.is_setup:
 			print('setting up user')
 			profile = ExclusionProfile.objects.get(pk = 1)
-			profile.subscribers.add(self)
-			profile.enabled.add(self)
+			self.all_profiles.add(profile)
+			self.profiles.add(profile)
 			self.is_setup = True
 			self.save()
 	def get_excluded(self):
