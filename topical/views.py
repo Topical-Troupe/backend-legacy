@@ -101,10 +101,10 @@ def product_404(request, upc):
     else:
         return HttpResponse(status = 405)
 
-def tag_data(request, fuzzy_name, tag_name):
+def tag_data(request, slug, tag_name):
     if request.method != 'GET':
         return HttpResponse(status = 405)
-    ingredient = Ingredient.by_name(fuzzy_name)
+    ingredient = get_object_or_404(Ingredient, slug = fuzzy_name)
     tag = Tag.by_name(tag_name)
     if ingredient.tag_stats is None:
         stats = IngredientTagDict()
