@@ -78,8 +78,6 @@ Topical is an API
 
 `api/me/` – gets the profile of the current user
 
-`api/usersetup/` – sets up the logged in user. This should be done after creating a user, but Django gets angry at me when I try to do this myself. :(
-
 `api/user/exclusions` – gets all ingredients excluded by the user.
 
 ##### GET response
