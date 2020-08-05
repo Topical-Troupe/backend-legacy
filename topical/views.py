@@ -106,7 +106,7 @@ def tag_data(request, slug, tag_name):
         return HttpResponse(status = 405)
     ingredient = get_object_or_404(Ingredient, slug = slug)
     tag = Tag.by_name(tag_name)
-    if ingredient.tag_stats is None:
+    if not hasattr(ingredient, 'tag_stats'):
         stats = IngredientTagDict()
         stats.ingredient = ingredient
         stats.save()
