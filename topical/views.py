@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, get_object_or_404
 
-from .models import ExclusionProfile, IngredientName, Product, Ingredient, IngredientTagEntry, Tag, User, get_excluded
+from .models import ExclusionProfile, IngredientName, Product, Ingredient, IngredientTagDict, IngredientTagEntry, Tag, User, get_excluded
 from .foreign import get_product_or_create
 
 def search_products(request):
@@ -106,6 +106,10 @@ def tag_data(request, fuzzy_name, tag_name):
         return HttpResponse(status = 405)
     ingredient = Ingredient.by_name(fuzzy_name)
     tag = Tag.by_name(tag_name)
+    if ingredient.tag_stats is None:
+        stats = IngredientTagDict()
+        stats.ingredient = ingredient
+        stats.save()
     ite = ingredient.tag_stats.for_tag.filter(tag = tag)
     if len(ite) == 0:
         ite = IngredientTagEntry()
