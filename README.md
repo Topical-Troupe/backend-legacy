@@ -1,6 +1,6 @@
 # Topical: the Backend
 
-Topical is an API
+Topical is a Progressive Web Application for making more informed decisions about your hygiene and beauty products! The backend is a REST API built with Django.
 
 ## Endpoints
 
